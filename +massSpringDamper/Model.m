@@ -21,7 +21,7 @@ classdef Model < handle
         % Initial Position
         InitialPosition(1, 1) double = 0
         % Random Stream Value
-        RandomStreamValue(1, 1) double = 0
+        RandomStreamValue(1, 1) double = 1
         % Random Stream For Force Input.
         RandomStream(1, 1) RandStream = RandStream("mt19937ar", "Seed", 0);
         % Maximum Magnitude Value.
@@ -54,7 +54,7 @@ classdef Model < handle
             simInp = Simulink.SimulationInput(obj.SimulinkModelName);
 
             % Specify External Inputs.
-            %simInp = simulink.compiler.setExternalInputsFcn(simInp, @(varargin) obj.setInput(varargin{:}));
+            simInp = simulink.compiler.setExternalInputsFcn(simInp, @obj.getInput);
 
             % Load the parameters values from the ui edit fields
             simInp = simInp.setVariable('k',obj.Stiffness, 'Workspace', 'MassSpringDamperModel');
@@ -72,7 +72,7 @@ classdef Model < handle
                 RandStream("mt19937ar", "Seed", obj.RandomStreamValue);
         end % function createSimulationInput
 
-        function forceInput = setInput( obj , varargin)
+        function forceInput = getInput( obj , ~, ~)
             % Magnitude of the input force
             ur01 = rand(obj.RandomStream);
             forceInputMag = 2*obj.MaximumMagnitude*(0.5-ur01);
