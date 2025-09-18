@@ -21,6 +21,8 @@ classdef SimulationController
         InputChangeSpinner(1, 1) matlab.ui.control.Spinner
         % Random Stream Seed Spinner.
         RandStreamSeedSpinner(1, 1) matlab.ui.control.Spinner
+        % Start Stop Button.
+        StartStopButton(1, 1) matlab.ui.control.Button
     end % properties
 
     methods
@@ -198,6 +200,16 @@ classdef SimulationController
                 "Value", 0);
             obj.RandStreamSeedSpinner.Layout.Row = 4;
             obj.RandStreamSeedSpinner.Layout.Column = 2;
+
+            % Create the Start Stop Button.
+            obj.StartStopButton = uibutton(mainLayout,...
+                "BackgroundColor", [0.651, 0.651, 0.651],...
+                "FontWeight", "bold",...
+                "Enable", "off",...
+                "Text", "Initializing...",...
+                "ButtonPushedFcn", @obj.onStartStopButtonPushed);
+            obj.StartStopButton.Layout.Row = 3;
+            obj.StartStopButton.Layout.Column = [1, 2];
         end
     end % methods ( Access = protected )
 
@@ -217,6 +229,10 @@ classdef SimulationController
             obj.Model.Damping = s.Value;
             obj.Model.changeDamping;
         end % onDampingValueChanging (obj, s, ~)
+
+        function onStartStopButtonPushed(obj, s, e)
+            %Comple code here.
+        end % onStartStopButtonPushed (obj, s, e)
 
     end % methods ( Access = private )
 
