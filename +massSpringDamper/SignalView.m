@@ -15,7 +15,7 @@ classdef SignalView < matlab.ui.componentcontainer.ComponentContainer
 
     properties (Constant)
         % External Force line path.
-        ExternalForceLinePath = "MassSpringDamperModel/External Force:1"
+        ExternalForceLinePath = "MassSpringDamperModel/External  Force:1"
         % Acceleration line path.
         AccLinePath = "MassSpringDamperModel/Mass:1"        
         % Velocity line path.
@@ -80,24 +80,24 @@ classdef SignalView < matlab.ui.componentcontainer.ComponentContainer
                 "XTimeSpan", 1,...
                 "YLimits", [0, 1],...
                 "Title", "Acceleration");
-            obj.ExternalForceTS.Layout.Row = 2;
-            obj.ExternalForceTS.Layout.Column = 1;
+            obj.AccelerationTS.Layout.Row = 2;
+            obj.AccelerationTS.Layout.Column = 1;
 
             obj.VelocityTS = uitimescope(...
                 "Parent", mainLayout,...
                 "XTimeSpan", 1,...
                 "YLimits", [0, 1],...
                 "Title", "Velocity");
-            obj.ExternalForceTS.Layout.Row = 3;
-            obj.ExternalForceTS.Layout.Column = 1;
+            obj.VelocityTS.Layout.Row = 3;
+            obj.VelocityTS.Layout.Column = 1;
 
             obj.PositionTS = uitimescope(...
                 "Parent", mainLayout,...
                 "XTimeSpan", 1,...
                 "YLimits", [0, 1],...
                 "Title", "Position");
-            obj.ExternalForceTS.Layout.Row = 4;
-            obj.ExternalForceTS.Layout.Column = 1;
+            obj.PositionTS.Layout.Row = 4;
+            obj.PositionTS.Layout.Column = 1;
 
         end % setup
 

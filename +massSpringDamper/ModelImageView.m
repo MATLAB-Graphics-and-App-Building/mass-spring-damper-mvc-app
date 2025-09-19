@@ -1,4 +1,4 @@
-classdef ModelImageView
+classdef ModelImageView < matlab.ui.componentcontainer.ComponentContainer
     %MODELIMAGEVIEW Creates the image of the Simulink model in the massSpringDamper App.
 
     properties ( GetAccess = protected, SetAccess = immutable )

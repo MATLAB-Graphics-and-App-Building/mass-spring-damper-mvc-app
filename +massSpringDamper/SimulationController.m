@@ -1,4 +1,4 @@
-classdef SimulationController
+classdef SimulationController < matlab.ui.componentcontainer.ComponentContainer
     %SIMULATIONCONTROLLER Provide a controller of the inputs and parameters of the simulation.
 
     properties ( GetAccess = protected, SetAccess = immutable )
@@ -16,7 +16,7 @@ classdef SimulationController
         % Damping Value Spinner.
         DampingSpinner(1, 1) matlab.ui.control.Spinner
         % Initial Position Value Spinner.
-        InitialPosEditField(1, 1) matlab.ui.control.EditField
+        InitialPosEditField(1, 1) matlab.ui.control.NumericEditField
         % Max Magnitude Spinner.
         MagSpinner(1, 1) matlab.ui.control.Spinner
         % Input Change Interval Spinner.
@@ -147,7 +147,7 @@ classdef SimulationController
             initialPosLabel.Layout.Row = 5;
             initialPosLabel.Layout.Column = 1;
 
-            obj.InitialPosEditField = uieditfield(paramGrid,...
+            obj.InitialPosEditField = uieditfield(paramGrid, "numeric",...
                 "LowerLimitInclusive", "off",...
                 "UpperLimitInclusive", "off",...
                 "Tag", "DisableWhileRunning",...
@@ -165,7 +165,7 @@ classdef SimulationController
             forceLabel.Layout.Column = [1, 2];
 
             % Create the Max magnitude Label and Spinner.
-            magLabel = uilabel(forceLabel,...
+            magLabel = uilabel(forceGrid,...
                 "Text", "Max Magnitude (N)");
             magLabel.Layout.Row = 2;
             magLabel.Layout.Column = 1;
@@ -206,7 +206,7 @@ classdef SimulationController
                 "Limits", [0 Inf],...
                 "Enable", "off",...
                 "ValueDisplayFormat", "%.0f",...
-                "Value", 0);
+                "Value", 1);
             obj.RandStreamSeedSpinner.Layout.Row = 4;
             obj.RandStreamSeedSpinner.Layout.Column = 2;
 
@@ -265,7 +265,12 @@ classdef SimulationController
             obj.SimPaceLabel.Layout.Row = 2;
             obj.SimPaceLabel.Layout.Column = 2;
 
-        end
+        end % function setup ( obj )
+
+        function update( ~ )
+            % Complete code
+        end % function update( ~ )
+
     end % methods ( Access = protected )
 
 

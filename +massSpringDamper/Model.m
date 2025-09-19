@@ -23,27 +23,27 @@ classdef Model < handle
         % Random Stream Value
         RandomStreamValue(1, 1) double = 1
         % Random Stream For Force Input.
-        RandomStream(1, 1) RandStream = RandStream("mt19937ar", "Seed", 0);
+        RandomStream(1, 1) RandStream = RandStream("mt19937ar", "Seed", 1);
         % Maximum Magnitude Value.
         MaximumMagnitude(1, 1) double = 100
         % Input Change Interval.
         InputChangeInterval(1, 1) double = 100
         % Simulation object.
-        Simulation(1, 1) simulink.Simulation
+        Simulation
         % Signals.
-        Signals(1, 1) simulink.sim.Signals
+        Signals
     end % properties ( SetAccess = private )
 
     methods 
 
-        function obj = Model
+        function obj = Model( modelName )
             %MODEL Constructs the massSpringDamper model.
 
             % Start Simulink
             start_simulink
 
             % Set up Simulation.
-            obj.Simulation = simulation(obj.SimulinkModelName);
+            obj.Simulation = simulation(modelName);
 
             % Set up signals.
             obj.Signals = obj.Simulation.LoggedSignals;
