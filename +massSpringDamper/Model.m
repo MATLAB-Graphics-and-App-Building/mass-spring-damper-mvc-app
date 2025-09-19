@@ -28,6 +28,10 @@ classdef Model < handle
         MaximumMagnitude(1, 1) double = 100
         % Input Change Interval.
         InputChangeInterval(1, 1) double = 100
+        % Simulation object.
+        Simulation(1, 1) simulink.Simulation
+        % Signals.
+        Signals(1, 1) simulink.sim.Signals
     end % properties ( SetAccess = private )
 
     methods 
@@ -37,6 +41,12 @@ classdef Model < handle
 
             % Start Simulink
             start_simulink
+
+            % Set up Simulation.
+            obj.Simulation = simulation(obj.SimulinkModelName);
+
+            % Set up signals.
+            obj.Signals = obj.Simulation.LoggedSignals;
           
         end
 

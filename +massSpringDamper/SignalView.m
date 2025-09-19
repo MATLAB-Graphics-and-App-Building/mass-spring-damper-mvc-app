@@ -13,11 +13,46 @@ classdef SignalView < matlab.ui.componentcontainer.ComponentContainer
         PositionTS(1, 1) matlab.ui.scope.TimeScope
     end % properties ( Access = private )
 
+    properties (Constant)
+        % Acceleration line path.
+        AccLinePath = "MassSpringDamperModel/Mass:1"        
+        % Velocity line path.
+        VelLinePath = "MassSpringDamperModel/Integrator, Second-Order:2"
+        % Position line path.
+        PosLinePath = "MassSpringDamperModel/Integrator, Second-Order:1"
+    end % properties (Constant)
+
+
     properties ( GetAccess = protected, SetAccess = immutable )
         % Application data model
         Model(:, 1) massSpringDamper.Model {mustBeScalarOrEmpty}
     end % properties ( GetAccess = protected, SetAccess = immutable )
 
+    methods
+
+        function obj = SignalView( model, namedArgs )
+            %SIGNALVIEW Construct a SignalView object, given
+            %the model and optional name-value pairs.
+
+            arguments ( Input )
+                model(1, 1) massSpringDamper.Model
+                namedArgs.?massSpringDamper.SignalView
+            end % arguments ( Input )
+
+            % Assign the model.
+            obj.Model = model;
+
+            % Set any user-specified properties.
+            set( obj, namedArgs )
+
+            % Bind the model signals with the timescopes.
+            bind(obj.Model.Signals, obj.AccLinePath, obj.AccelerationTS)
+            bind(obj.Model.Signals, obj.VelLinePath, obj.VelocityTS)
+            bind(obj.Model.Signals, obj.PosLinePath, obj.PositionTS)
+
+        end % constructor
+
+    end % methods
 
     methods ( Access = protected )
 
@@ -63,8 +98,8 @@ classdef SignalView < matlab.ui.componentcontainer.ComponentContainer
 
         end % setup
 
-        function update( obj )
-            
+        function update( ~ )
+            % Complete code
         end % update
 
     end % methods ( Access = protected )
