@@ -112,6 +112,9 @@ classdef Model < handle
             obj.modifyParameterDuringSim("b", obj.Damping);
         end % function changeDamping
 
+        function checkState( obj )
+            assert(simulink.compiler.getSimulationStatus(obj.SimulinkModelName) == slsim.SimulationStatus.Inactive);
+        end % function checkState( obj )
 
     end % methods
 

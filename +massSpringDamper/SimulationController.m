@@ -7,6 +7,8 @@ classdef SimulationController
     end % properties ( GetAccess = protected, SetAccess = immutable )
 
     properties ( Access = private )
+        % Main Grid Layout.
+        MainLayout(1, 1) matlab.ui.container.GridLayout
         % Mass Value Spinner.
         MassSpinner(1, 1) matlab.ui.control.Spinner
         % Stiffness Value Spinner.
@@ -52,12 +54,12 @@ classdef SimulationController
             %SETUP Initialize the component.
 
             % Create the main layout.
-            mainLayout = uigridlayout( "Parent", obj, ...
+            obj.MainLayout = uigridlayout( "Parent", obj, ...
                 "ColumnWidth", {"fit", "1x"}, ...
                 "RowHeight", {"5x", "4x", "1x", "1x"});
 
             % Create the parameters Panel.
-            paramPanel = uipanel(mainLayout,...
+            paramPanel = uipanel(obj.MainLayout,...
                 "BackgroundColor", [0.902 0.902 0.902]);
             paramPanel.Layout.Row = 1;
             paramPanel.Layout.Column = [1, 2];
@@ -68,7 +70,7 @@ classdef SimulationController
                 "RowHeight", {"1x", "1x", "1x", "1x", "1x"});
 
             % Create the Force Input panel
-            forcePanel = uipanel(mainLayout,...
+            forcePanel = uipanel(obj.MainLayout,...
                 "BackgroundColor", [0.902 0.902 0.902]);
             forcePanel.Layout.Row = 2;
             forcePanel.Layout.Column = [1, 2];
@@ -187,7 +189,8 @@ classdef SimulationController
 
             % Create the Random Stream Seed Label and Spinner.
             randSeedStreamLabel = uilabel(forceGrid,...
-                "Text", "Rand Stream Seed");
+                "Text", "Rand Stream Seed",...
+                "Tag", "DisableWhileRunning");
             randSeedStreamLabel.Layout.Row = 4;
             randSeedStreamLabel.Layout.Column = 1;
 
@@ -202,7 +205,7 @@ classdef SimulationController
             obj.RandStreamSeedSpinner.Layout.Column = 2;
 
             % Create the Start Stop Button.
-            obj.StartStopButton = uibutton(mainLayout,...
+            obj.StartStopButton = uibutton(obj.MainLayout,...
                 "BackgroundColor", [0.651, 0.651, 0.651],...
                 "FontWeight", "bold",...
                 "Enable", "off",...
@@ -225,14 +228,54 @@ classdef SimulationController
             obj.Model.changeStiffness;
         end % onStiffnessValueChanging (obj, s, ~)
 
-        function onDampingValueChanging (obj, s, ~)
+        function onDampingValueChanging ( obj, s, ~ )
             obj.Model.Damping = s.Value;
             obj.Model.changeDamping;
         end % onDampingValueChanging (obj, s, ~)
 
-        function onStartStopButtonPushed(obj, s, e)
-            %Comple code here.
-        end % onStartStopButtonPushed (obj, s, e)
+        function onStartStopButtonPushed(obj, ~, ~)
+            obj.Model.StartStopSimulation;
+            if isequal(obj.StartStopButton.Text,"Start")
+                obj.manageAppState("Starting ...");
+            else
+                assert(isequal(obj.StartStopButton.Text,"Stop"));
+                obj.manageAppState("Stopping ...");
+                return; % return here so that sim finishes and runs the cleanup code below
+            end
+            % catch ME
+            %     % Handle error during sim
+            %     if ~isempty(ME.cause), ME = ME.cause{1}; end
+            %     uialert(app.GUI, getReport(ME,'extended','hyperlinks','off'), 'Error');
+            % end
+            % app.manageAppState('Start');
+            obj.manageAppState("Start");
+        end % onStartStopButtonPushed ( obj, s, e )
+
+        function manageAppState( obj, startStopBtnText )
+            obj.StartStopButton.Text = startStopBtnText;
+            switch startStopBtnText
+                case "Start"
+                    obj.Model.checkState
+                    obj.StartStopButton.BackgroundColor = [0.47,0.67,0.19]; % green
+                    set(obj.InitialPosEditField, "Enable", "on")
+                case "Starting ..."
+                    set(findobj(obj.MainLayout.Children,'-property','Enable'),'Enable','off');
+                    % set(app.forLH, 'XData',[], 'YData',[]);
+                    % set(app.accLH, 'XData',[], 'YData',[]);
+                    % set(app.velLH, 'XData',[], 'YData',[]);
+                    % set(app.posLH, 'XData',[], 'YData',[]);
+                    % app.ForUIAxes.XLim = [0 10*app.InputChangeInterval.Value];
+                    % app.wallClockTimeAtSimStart = tic;
+                    % Simulink.sdi.clear();
+                case "Stop"
+                    obj.StartStopButton.BackgroundColor = [0.85,0.33,0.10]; % red
+                    set(findobj(obj.MainLayout.Children,'-property','Enable'),'Enable','on');
+                    set(findobj(obj.MainLayout.Children,'Tag','DisableWhileRunning'),'Enable','off');
+                case "Stopping ..."
+                    set(findobj(obj.MainLayout.Children,'-property','Enable'),'Enable','off');
+            end
+            drawnow limitrate;
+        end % function manageAppState( obj, startStopBtnText )
 
     end % methods ( Access = private )
 
