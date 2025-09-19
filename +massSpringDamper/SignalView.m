@@ -14,6 +14,8 @@ classdef SignalView < matlab.ui.componentcontainer.ComponentContainer
     end % properties ( Access = private )
 
     properties (Constant)
+        % External Force line path.
+        ExternalForceLinePath = "MassSpringDamperModel/External Force:1"
         % Acceleration line path.
         AccLinePath = "MassSpringDamperModel/Mass:1"        
         % Velocity line path.
@@ -46,6 +48,7 @@ classdef SignalView < matlab.ui.componentcontainer.ComponentContainer
             set( obj, namedArgs )
 
             % Bind the model signals with the timescopes.
+            bind(obj.Model.Signals, obj.ExternalForceLinePath, obj.ExternalForceTS)
             bind(obj.Model.Signals, obj.AccLinePath, obj.AccelerationTS)
             bind(obj.Model.Signals, obj.VelLinePath, obj.VelocityTS)
             bind(obj.Model.Signals, obj.PosLinePath, obj.PositionTS)
