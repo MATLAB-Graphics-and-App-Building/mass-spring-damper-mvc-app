@@ -53,7 +53,7 @@ classdef Model < handle
         function StartStopSimulation( obj )
             if simulink.compiler.getSimulationStatus(obj.SimulinkModelName) == slsim.SimulationStatus.Inactive
                 obj.SimulationInput = obj.createSimulationInput();
-                obj.SimulationOutput = sim(obj.SimulationInput);
+                obj.SimulationOutput = sim(obj.SimulinkModelName);
             else
                 simulink.compiler.stopSimulation(obj.SimulinkModelName)
             end % if

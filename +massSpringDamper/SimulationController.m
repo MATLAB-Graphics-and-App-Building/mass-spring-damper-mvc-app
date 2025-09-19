@@ -207,10 +207,9 @@ classdef SimulationController < matlab.ui.componentcontainer.ComponentContainer
 
             % Create the Start Stop Button.
             obj.StartStopButton = uibutton(obj.MainLayout,...
-                "BackgroundColor", [0.651, 0.651, 0.651],...
+                "BackgroundColor", [0.47, 0.67, 0.19],...
                 "FontWeight", "bold",...
-                "Enable", "off",...
-                "Text", "Initializing...",...
+                "Text", "Start",...
                 "ButtonPushedFcn", @obj.onStartStopButtonPushed);
             obj.StartStopButton.Layout.Row = 3;
             obj.StartStopButton.Layout.Column = [1, 2];
@@ -271,18 +270,18 @@ classdef SimulationController < matlab.ui.componentcontainer.ComponentContainer
 
     methods ( Access = private )
         function onMassValueChanging (obj, s, ~)
-            obj.Model.Mass = s.Value;
-            obj.Model.changeMass;
+            mass = s.Value;
+            obj.Model.changeMass(mass);
         end % onMassValueChanging (obj, s, ~)
 
         function onStiffnessValueChanging (obj, s, ~)
-            obj.Model.Stiffness = s.Value;
-            obj.Model.changeStiffness;
+            stiffness = s.Value;
+            obj.Model.changeStiffness(stiffness);
         end % onStiffnessValueChanging (obj, s, ~)
 
         function onDampingValueChanging ( obj, s, ~ )
-            obj.Model.Damping = s.Value;
-            obj.Model.changeDamping;
+            damping = s.Value;
+            obj.Model.changeDamping(damping);
         end % onDampingValueChanging (obj, s, ~)
 
         function onStartStopButtonPushed(obj, ~, ~)

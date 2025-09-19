@@ -48,10 +48,10 @@ classdef SignalView < matlab.ui.componentcontainer.ComponentContainer
             set( obj, namedArgs )
 
             % Bind the model signals with the timescopes.
-            bind(obj.Model.Signals, obj.ExternalForceLinePath, obj.ExternalForceTS)
-            bind(obj.Model.Signals, obj.AccLinePath, obj.AccelerationTS)
-            bind(obj.Model.Signals, obj.VelLinePath, obj.VelocityTS)
-            bind(obj.Model.Signals, obj.PosLinePath, obj.PositionTS)
+            bind(obj.Model.Signals, obj.ExternalForceLinePath, obj.ExternalForceTS);
+            bind(obj.Model.Signals, obj.AccLinePath, obj.AccelerationTS);
+            bind(obj.Model.Signals, obj.VelLinePath, obj.VelocityTS);
+            bind(obj.Model.Signals, obj.PosLinePath, obj.PositionTS);
 
         end % constructor
 
