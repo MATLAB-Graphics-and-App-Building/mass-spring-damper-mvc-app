@@ -25,6 +25,12 @@ classdef SimulationController
         RandStreamSeedSpinner(1, 1) matlab.ui.control.Spinner
         % Start Stop Button.
         StartStopButton(1, 1) matlab.ui.control.Button
+        % Max Points Per Signal Spinner.
+        MaxPointsPerSignalSpinner(1, 1) matlab.ui.control.Spinner
+        % Sim Time Label.
+        SimTimeLabel(1, 1) matlab.ui.control.Label
+        % Sim Pace Label.
+        SimPaceLabel(1, 1) matlab.ui.control.Label
     end % properties
 
     methods
@@ -56,7 +62,7 @@ classdef SimulationController
             % Create the main layout.
             obj.MainLayout = uigridlayout( "Parent", obj, ...
                 "ColumnWidth", {"fit", "1x"}, ...
-                "RowHeight", {"5x", "4x", "1x", "1x"});
+                "RowHeight", {"5x", "4x", "1x", "1x", "2x"});
 
             % Create the parameters Panel.
             paramPanel = uipanel(obj.MainLayout,...
@@ -213,6 +219,52 @@ classdef SimulationController
                 "ButtonPushedFcn", @obj.onStartStopButtonPushed);
             obj.StartStopButton.Layout.Row = 3;
             obj.StartStopButton.Layout.Column = [1, 2];
+
+            % Create the Max points per signal label and spinner.
+            maxPointsPerSignalLabel = uilabel(obj.MainLayout,...
+                "HorizontalAlignment", "right",...
+                "Text", "Max Number Of Points Per Signal");
+            maxPointsPerSignalLabel.Layout.Row = 4;
+            maxPointsPerSignalLabel.Layout.Column = 1;
+
+            obj.MaxPointsPerSignalSpinner = uispinner(obj.MainLayout,...
+                "Step", 500,...
+                "Limits", [1000 1000000],...
+                "RoundFractionalValues", "on",...
+                "Value", 100000,...
+                "ValueChangingFcn", @obj.onMaxPointsPerSignalChanging);
+            obj.MaxPointsPerSignalSpinner.Layout.Row = 4;
+            obj.MaxPointsPerSignalSpinner.Layout.Column = 2;
+
+
+            % Simulation pace and time grid.
+            simPaceTimeGrid = uigridlayout(obj.MainLayout,...
+                [2, 2], "ColumnWidth", {"fit", "1x"});
+
+            simTimeText = uilabel(simPaceTimeGrid,...
+                "Text", "Simulation Time:");
+            simTimeText.Layout.Row = 1;
+            simTimeText.Layout.Column = 1;
+
+            obj.SimTimeLabel = uilabel(simPaceTimeGrid,...
+                "HorizontalAlignment", "right",...
+                "FontColor", [0, 0.4471, 0.7412],...
+                "Text", "");
+            obj.SimTimeLabel.Layout.Row = 1;
+            obj.SimTimeLabel.Layout.Column = 2;
+
+            simPaceText = uilabel(simPaceTimeGrid,...
+                "Text", "Simulation Pace:");
+            simPaceText.Layout.Row = 2;
+            simPaceText.Layout.Column = 1;
+
+            obj.SimPaceLabel = uilabel(simPaceTimeGrid,...
+                "HorizontalAlignment", "right",...
+                "FontColor", [0, 0.4471, 0.7412],...
+                "Text", "");
+            obj.SimPaceLabel.Layout.Row = 2;
+            obj.SimPaceLabel.Layout.Column = 2;
+
         end
     end % methods ( Access = protected )
 
@@ -250,6 +302,10 @@ classdef SimulationController
             % app.manageAppState('Start');
             obj.manageAppState("Start");
         end % onStartStopButtonPushed ( obj, s, e )
+
+        function onMaxPointsPerSignalChanging ( obj )
+
+        end % function onMaxPointsPerSignalChanging ( obj )
 
         function manageAppState( obj, startStopBtnText )
             obj.StartStopButton.Text = startStopBtnText;
