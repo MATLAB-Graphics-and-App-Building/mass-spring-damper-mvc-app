@@ -4,13 +4,13 @@ classdef SignalView < matlab.ui.componentcontainer.ComponentContainer
 
     properties ( Access = private )
         % TimeScope for External Force.
-        ExternalForceTS(1, 1) matlab.ui.scope.TimeScope
+        ExternalForceTS(1, 1) matlab.ui.scope.TimeScope {mustBeScalarOrEmpty}
         % TimeScope for Acceleration.
-        AccelerationTS(1, 1) matlab.ui.scope.TimeScope
+        AccelerationTS(1, 1) matlab.ui.scope.TimeScope {mustBeScalarOrEmpty}
         % TimeScope for Velocity.
-        VelocityTS(1, 1) matlab.ui.scope.TimeScope
+        VelocityTS(1, 1) matlab.ui.scope.TimeScope {mustBeScalarOrEmpty}
         % TimeScope for Position.
-        PositionTS(1, 1) matlab.ui.scope.TimeScope
+        PositionTS(1, 1) matlab.ui.scope.TimeScope {mustBeScalarOrEmpty}
     end % properties ( Access = private )
 
     properties (Constant)
