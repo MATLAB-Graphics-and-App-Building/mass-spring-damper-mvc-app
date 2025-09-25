@@ -13,18 +13,6 @@ classdef SignalView < matlab.ui.componentcontainer.ComponentContainer
         PositionTS(1, 1) matlab.ui.scope.TimeScope {mustBeScalarOrEmpty}
     end % properties ( Access = private )
 
-    properties (Constant)
-        % External Force line path.
-        ExternalForceLinePath = "MassSpringDamperModel/External  Force:1"
-        % Acceleration line path.
-        AccLinePath = "MassSpringDamperModel/Mass:1"        
-        % Velocity line path.
-        VelLinePath = "MassSpringDamperModel/Integrator, Second-Order:2"
-        % Position line path.
-        PosLinePath = "MassSpringDamperModel/Integrator, Second-Order:1"
-    end % properties (Constant)
-
-
     properties ( GetAccess = protected, SetAccess = immutable )
         % Application data model
         Model(:, 1) massSpringDamper.Model {mustBeScalarOrEmpty}
@@ -48,10 +36,10 @@ classdef SignalView < matlab.ui.componentcontainer.ComponentContainer
             set( obj, namedArgs )
 
             % Bind the model signals with the timescopes.
-            bind(obj.Model.Signals, obj.ExternalForceLinePath, obj.ExternalForceTS);
-            bind(obj.Model.Signals, obj.AccLinePath, obj.AccelerationTS);
-            bind(obj.Model.Signals, obj.VelLinePath, obj.VelocityTS);
-            bind(obj.Model.Signals, obj.PosLinePath, obj.PositionTS);
+            bind(obj.Model.Signals, obj.Model.ExternalForceLinePath, obj.ExternalForceTS);
+            bind(obj.Model.Signals, obj.Model.AccLinePath, obj.AccelerationTS);
+            bind(obj.Model.Signals, obj.Model.VelLinePath, obj.VelocityTS);
+            bind(obj.Model.Signals, obj.Model.PosLinePath, obj.PositionTS);
 
         end % constructor
 

@@ -5,7 +5,15 @@ classdef Model < handle
     properties ( Constant )
         % Name of Simulink Model.
         SimulinkModelName = "MassSpringDamperModel"
-    end % properties ( Constant )
+        % External Force line path.
+        ExternalForceLinePath = "MassSpringDamperModel/External  Force:1"
+        % Acceleration line path.
+        AccLinePath = "MassSpringDamperModel/Mass:1"        
+        % Velocity line path.
+        VelLinePath = "MassSpringDamperModel/Integrator, Second-Order:2"
+        % Position line path.
+        PosLinePath = "MassSpringDamperModel/Integrator, Second-Order:1"
+    end % properties (Constant)
 
     properties
         % Simulation Inputs.
