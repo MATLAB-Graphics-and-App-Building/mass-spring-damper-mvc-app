@@ -1,4 +1,4 @@
-classdef SignalView < matlab.ui.componentcontainer.ComponentContainer
+classdef SignalView < massSpringDamper.Component
     %SIGNALVIEW Displays the simulation signals for the External Force,
     %Acceleration, Velocity and Position.
 
