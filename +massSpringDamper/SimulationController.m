@@ -332,52 +332,16 @@ classdef SimulationController < massSpringDamper.Component
         end % onDampingValueChanging (obj, s, ~)
 
         function onStartStopButtonPushed(obj, ~, ~)
-            obj.Model.StartStopSimulation;
-            if isequal(obj.StartStopButton.Text,"Start")
-                obj.manageAppState("Starting ...");
-            else
-                assert(isequal(obj.StartStopButton.Text,"Stop"));
-                obj.manageAppState("Stopping ...");
-                return; % return here so that sim finishes and runs the cleanup code below
-            end
-            % catch ME
-            %     % Handle error during sim
-            %     if ~isempty(ME.cause), ME = ME.cause{1}; end
-            %     uialert(app.GUI, getReport(ME,'extended','hyperlinks','off'), 'Error');
-            % end
-            % app.manageAppState('Start');
-            obj.manageAppState("Start");
+            if obj.Model.SimulationStatus == "Inactive"
+                obj.Model.StartSimulation;
+            elseif obj.Model.SimulationStatus == "Running"
+                obj.Model.StopSimulation;
+            end % if
         end % onStartStopButtonPushed ( obj, s, e )
 
         function onMaxPointsPerSignalChanging ( obj )
-
+            %Complete code
         end % function onMaxPointsPerSignalChanging ( obj )
-
-        function manageAppState( obj, startStopBtnText )
-            obj.StartStopButton.Text = startStopBtnText;
-            switch startStopBtnText
-                case "Start"
-                    obj.Model.checkState
-                    obj.StartStopButton.BackgroundColor = [0.47,0.67,0.19]; % green
-                    set(obj.InitialPosEditField, "Enable", "on")
-                case "Starting ..."
-                    set(findobj(obj.MainLayout.Children,'-property','Enable'),'Enable','off');
-                    % set(app.forLH, 'XData',[], 'YData',[]);
-                    % set(app.accLH, 'XData',[], 'YData',[]);
-                    % set(app.velLH, 'XData',[], 'YData',[]);
-                    % set(app.posLH, 'XData',[], 'YData',[]);
-                    % app.ForUIAxes.XLim = [0 10*app.InputChangeInterval.Value];
-                    % app.wallClockTimeAtSimStart = tic;
-                    % Simulink.sdi.clear();
-                case "Stop"
-                    obj.StartStopButton.BackgroundColor = [0.85,0.33,0.10]; % red
-                    set(findobj(obj.MainLayout.Children,'-property','Enable'),'Enable','on');
-                    set(findobj(obj.MainLayout.Children,'Tag','DisableWhileRunning'),'Enable','off');
-                case "Stopping ..."
-                    set(findobj(obj.MainLayout.Children,'-property','Enable'),'Enable','off');
-            end
-            drawnow limitrate;
-        end % function manageAppState( obj, startStopBtnText )
 
     end % methods ( Access = private )
 
