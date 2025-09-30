@@ -2,18 +2,10 @@ classdef Model < handle
     %MODEL Data model for the mass-spring-damper model app.
 
 
-    properties ( Constant )
+    properties ( SetAccess = immutable )
         % Name of Simulink Model.
-        SimulinkModelName = "MassSpringDamperModel"
-        % External Force line path.
-        ExternalForceLinePath = "MassSpringDamperModel/External  Force:1"
-        % Acceleration line path.
-        AccLinePath = "MassSpringDamperModel/Mass:1"        
-        % Velocity line path.
-        VelLinePath = "MassSpringDamperModel/Integrator, Second-Order:2"
-        % Position line path.
-        PosLinePath = "MassSpringDamperModel/Integrator, Second-Order:1"
-    end % properties (Constant)
+        SimulinkModelName(1, 1) string
+    end
 
     properties
         % Simulation Inputs.
@@ -28,21 +20,35 @@ classdef Model < handle
         Damping(1, 1) double = 1
         % Initial Position
         InitialPosition(1, 1) double = 0
-        % Random Stream Value
-        RandomStreamValue(1, 1) double = 1
-        % Random Stream For Force Input.
-        RandomStream(1, 1) RandStream = RandStream("mt19937ar", "Seed", 1);
         % Maximum Magnitude Value.
         MaximumMagnitude(1, 1) double = 100
         % Input Change Interval.
-        InputChangeInterval(1, 1) double = 100
-        % Simulation object.
-        Simulation
-        % Signals.
-        Signals
+        %InputChangeInterval(1, 1) double = 100
+    end % properties
+
+    properties ( SetAccess = private )
+        % Simulation Time.
+        SimTime(1, 1) double = 0
+        % External Force Data.
+        ExtForceData(1, :) timeseries = []
+        % Position Data.
+        PosData(1, :) timeseries = []
+        % Velocity Data.
+        VelData(1, :) timeseries = []
+        % Acceleration Data.
+        AccData(1, :) timeseries = []
+        % Simulation Status.
+        SimulationStatus(1, 1) slsim.SimulationStatus = 'Inactive'
     end % properties ( SetAccess = private )
 
-    methods 
+    events ( NotifyAccess = private)
+        % The simulation status has changed.
+        StatusChanged
+        % The simulation step has run.
+        SimulationStepDone
+    end % events ( NotifyAccess = private )
+
+    methods
 
         function obj = Model( modelName )
             %MODEL Constructs the massSpringDamper model.
@@ -50,52 +56,78 @@ classdef Model < handle
             % Start Simulink
             start_simulink
 
-            % Set up Simulation.
-            obj.Simulation = simulation(modelName);
+            % Set the name of the model.
+            obj.SimulinkModelName = modelName;
 
-            % Set up signals.
-            obj.Signals = obj.Simulation.LoggedSignals;
-          
+
         end
 
-        function StartStopSimulation( obj )
-            if simulink.compiler.getSimulationStatus(obj.SimulinkModelName) == slsim.SimulationStatus.Inactive
-                obj.SimulationInput = obj.createSimulationInput();
-                obj.SimulationOutput = sim(obj.SimulinkModelName);
-            else
-                simulink.compiler.stopSimulation(obj.SimulinkModelName)
-            end % if
+        function StartSimulation( obj )
+            assert(simulink.compiler.getSimulationStatus(obj.SimulinkModelName) == slsim.SimulationStatus.Inactive)
+            obj.SimTime = 0;
+            obj.SimulationInput = obj.createSimulationInput();
+            obj.SimulationOutput = sim(obj.SimulationInput);
+        end % function StartSimulation( obj )
+
+        function StopSimulation( obj )
+            assert(simulink.compiler.getSimulationStatus(obj.SimulinkModelName) == slsim.SimulationStatus.Active)
+            simulink.compiler.stopSimulation(obj.SimulinkModelName)
         end % function StartStopSimulation
 
         function simInp = createSimulationInput( obj )
             % Create an empty SimulationInput Object.
             simInp = Simulink.SimulationInput(obj.SimulinkModelName);
 
+            % Setting a Status changed Function.
+            simInp = simulink.compiler.setSimulationStatusChangeFcn(simInp,...
+                @(simStatus) obj.simStatusChanged(simStatus));
+
             % Specify External Inputs.
-            simInp = simulink.compiler.setExternalInputsFcn(simInp, @obj.getInput);
+            simInp = simulink.compiler.setExternalInputsFcn(simInp, @obj.setInput);
+
+            % PostStepFcn is used to update plots
+            simInp = simulink.compiler.setPostStepFcn(simInp, ...
+                @(simTime) obj.postSimulationStep(simTime));
 
             % Load the parameters values from the ui edit fields
             simInp = simInp.setVariable('k',obj.Stiffness, 'Workspace', 'MassSpringDamperModel');
             simInp = simInp.setVariable('m',obj.Mass, 'Workspace', 'MassSpringDamperModel');
             simInp = simInp.setVariable('b',obj.Damping, 'Workspace', 'MassSpringDamperModel');
             simInp = simInp.setVariable('x0',obj.InitialPosition, 'Workspace', 'MassSpringDamperModel');
-            
+
             % Since sim will run forever, turn off (or limit) data logging
             simInp = simInp.setModelParameter('StopTime','inf');
-            
+
             simInp = simulink.compiler.configureForDeployment(simInp);
 
-            % create a rand stream used to generate force input values
-            obj.RandomStream = ...
-                RandStream("mt19937ar", "Seed", obj.RandomStreamValue);
         end % function createSimulationInput
 
-        function forceInput = getInput( obj , ~, ~)
-            % Magnitude of the input force
-            ur01 = rand(obj.RandomStream);
-            forceInputMag = 2*obj.MaximumMagnitude*(0.5-ur01);
+        function simStatusChanged ( obj, simStatus )
+            obj.SimulationStatus = simStatus;
+            obj.notify( "StatusChanged" )
+        end % function simStatusChanged
 
-            forceInput = repmat(forceInputMag, 1, obj.InputChangeInterval);
+        function postSimulationStep ( obj, simTime )
+            obj.SimTime = simTime;
+            % obj.SimTime  = simulink.compiler.getSimulationTime(obj.SimulinkModelName);
+            % Complete the pace obj.SimPace = obj.SimTime/
+            obj.SimulationOutput = simulink.compiler.getSimulationOutput(obj.SimulinkModelName);
+            obj.ExtForceData = obj.SimulationOutput.logsout{1}.Values;
+            obj.PosData = obj.SimulationOutput.logsout{2}.Values;
+            obj.VelData = obj.SimulationOutput.logsout{3}.Values;
+            obj.AccData = obj.SimulationOutput.logsout{4}.Values;
+            obj.notify("SimulationStepDone")
+        end
+
+        function forceInput = setInput( obj , ~, simTime)
+            % Magnitude of the input force
+            % ur01 = rand;
+            % forceInput = 2*obj.MaximumMagnitude*(0.5-ur01);
+            forceInput = 5;
+            obj.ExtForceData.Time = simTime;
+            obj.ExtForceData.Data = forceInput;
+            %
+            % forceInput = repmat(forceInputMag, 1, obj.InputChangeInterval);
         end % function setInput
 
         function modifyParameterDuringSim ( obj , paramName, paramValue)
@@ -110,7 +142,7 @@ classdef Model < handle
                 obj.Mass = paramValue;
             elseif paramName == "k"
                 obj.Stiffness = paramValue;
-            else 
+            else
                 obj.Damping = paramValue;
             end % if
         end % function modifyParameterDuringSim
