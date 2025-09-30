@@ -36,13 +36,13 @@ classdef SignalView < massSpringDamper.Component
 
     methods ( Access = protected )
 
-        function onStatusChanged( obj )
+        function onStatusChanged( ~ )
             %ONSTATUSCHANGED Respond to the model event "StatusChanged".
             % Complete
 
         end % onStatusChanged
 
-        function onSimulationStepDone( obj )
+        function onSimulationStepDone( ~ )
             %ONSIMULATIONSTEPDONE Respond to the model event
             %"SimulationStepDone".
             % Complete
