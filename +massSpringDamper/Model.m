@@ -23,7 +23,7 @@ classdef Model < handle
         % Maximum Magnitude Value.
         MaximumMagnitude(1, 1) double = 100
         % Input Change Interval.
-        %InputChangeInterval(1, 1) double = 100
+        % InputChangeInterval(1, 1) double = 100
     end % properties
 
     properties ( SetAccess = private )

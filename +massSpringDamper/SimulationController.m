@@ -1,10 +1,5 @@
-classdef SimulationController < matlab.ui.componentcontainer.ComponentContainer
+classdef SimulationController < massSpringDamper.Component
     %SIMULATIONCONTROLLER Provide a controller of the inputs and parameters of the simulation.
-
-    properties ( GetAccess = protected, SetAccess = immutable )
-        % Application data model.
-        Model(:, 1) massSpringDamper.Model {mustBeScalarOrEmpty}
-    end % properties ( GetAccess = protected, SetAccess = immutable )
 
     properties ( Access = private )
         % Main Grid Layout.
@@ -21,8 +16,6 @@ classdef SimulationController < matlab.ui.componentcontainer.ComponentContainer
         MagSpinner(1, 1) matlab.ui.control.Spinner
         % Input Change Interval Spinner.
         InputChangeSpinner(1, 1) matlab.ui.control.Spinner
-        % Random Stream Seed Spinner.
-        RandStreamSeedSpinner(1, 1) matlab.ui.control.Spinner
         % Start Stop Button.
         StartStopButton(1, 1) matlab.ui.control.Button
         % Max Points Per Signal Spinner.
@@ -44,8 +37,8 @@ classdef SimulationController < matlab.ui.componentcontainer.ComponentContainer
                 namedArgs.?massSpringDamper.SimulationController
             end % arguments ( Input )
 
-            % Assign the model.
-            obj.Model = model;
+            % Call the superclass constructor.
+            obj@massSpringDamper.Component( model )
 
             % Set any user-specified properties.
             set( obj, namedArgs )
@@ -55,6 +48,59 @@ classdef SimulationController < matlab.ui.componentcontainer.ComponentContainer
     end % methods
 
     methods ( Access = protected )
+
+        function onStatusChanged( obj )
+            %ONSTATUSCHANGED Respond to the model event "StatusChanged".
+            
+            if obj.Model.SimulationStatus == "Initializing" || obj.Model.SimulationStatus =="Initialized"
+                set(obj.MassSpinner, "Enable", "off")
+                set(obj.StiffnessSpinner, "Enable", "off")
+                set(obj.DampingSpinner, "Enable", "off")
+                set(obj.InitialPosEditField, "Enable", "off")
+                set(obj.MagSpinner, "Enable", "off")
+                set(obj.InputChangeSpinner, "Enable", "off")
+                set(obj.StartStopButton, "Enable", "off")
+                set(obj.MaxPointsPerSignalSpinner, "Enable", "off")
+                set(obj.SimTimeLabel, "Enable", "off")
+                set(obj.SimPaceLabel, "Enable", "off")
+
+                obj.StartStopButton.Text = "Starting...";
+
+            elseif obj.Model.SimulationStatus == "Running"
+                obj.StartStopButton.Text = "Stop";
+                obj.StartStopButton.BackgroundColor = [0.8, 0.33, 0.10];
+                set(obj.MassSpinner, "Enable", "on")
+                set(obj.StiffnessSpinner, "Enable", "on")
+                set(obj.DampingSpinner, "Enable", "on")
+                set(obj.MagSpinner, "Enable", "on")
+                set(obj.InputChangeSpinner, "Enable", "on")
+                set(obj.StartStopButton, "Enable", "on")
+                set(obj.MaxPointsPerSignalSpinner, "Enable", "on")
+                set(obj.SimTimeLabel, "Enable", "on")
+                set(obj.SimPaceLabel, "Enable", "on")
+
+            elseif obj.Model.SimulationStatus == "Inactive"
+                obj.StartStopButton.Text = "Start";
+                obj.StartStopButton.BackgroundColor = [0.47, 0.67, 0.19];
+                set(obj.MassSpinner, "Enable", "on")
+                set(obj.StiffnessSpinner, "Enable", "on")
+                set(obj.DampingSpinner, "Enable", "on")
+                set(obj.InitialPosEditField, "Enable", "on")
+                set(obj.MagSpinner, "Enable", "on")
+                set(obj.InputChangeSpinner, "Enable", "on")
+                set(obj.StartStopButton, "Enable", "on")
+                set(obj.MaxPointsPerSignalSpinner, "Enable", "on")
+                set(obj.SimTimeLabel, "Enable", "on")
+                set(obj.SimPaceLabel, "Enable", "on")
+            end
+
+        end % onPredictionMade
+
+        function onCategorySelected( ~ )
+            %ONCATEGORYSELECTED Respond to the model event
+            %"CategorySelected". Not needed here.
+
+        end % onCategorySelected
 
         function setup( obj )
             %SETUP Initialize the component.
