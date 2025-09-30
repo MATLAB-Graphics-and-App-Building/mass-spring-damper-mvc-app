@@ -1,4 +1,4 @@
-classdef SignalView < matlab.ui.componentcontainer.ComponentContainer
+classdef SignalView < massSpringDamper.Component
     %SIGNALVIEW Displays the simulation signals for the External Force,
     %Acceleration, Velocity and Position.
 
@@ -13,11 +13,6 @@ classdef SignalView < matlab.ui.componentcontainer.ComponentContainer
         PositionTS(1, 1) matlab.ui.scope.TimeScope {mustBeScalarOrEmpty}
     end % properties ( Access = private )
 
-    properties ( GetAccess = protected, SetAccess = immutable )
-        % Application data model
-        Model(:, 1) massSpringDamper.Model {mustBeScalarOrEmpty}
-    end % properties ( GetAccess = protected, SetAccess = immutable )
-
     methods
 
         function obj = SignalView( model, namedArgs )
@@ -29,23 +24,30 @@ classdef SignalView < matlab.ui.componentcontainer.ComponentContainer
                 namedArgs.?massSpringDamper.SignalView
             end % arguments ( Input )
 
-            % Assign the model.
-            obj.Model = model;
+            % Call the superclass constructor.
+            obj@massSpringDamper.Component( model )
 
             % Set any user-specified properties.
             set( obj, namedArgs )
-
-            % Bind the model signals with the timescopes.
-            bind(obj.Model.Signals, obj.Model.ExternalForceLinePath, obj.ExternalForceTS);
-            bind(obj.Model.Signals, obj.Model.AccLinePath, obj.AccelerationTS);
-            bind(obj.Model.Signals, obj.Model.VelLinePath, obj.VelocityTS);
-            bind(obj.Model.Signals, obj.Model.PosLinePath, obj.PositionTS);
 
         end % constructor
 
     end % methods
 
     methods ( Access = protected )
+
+        function onStatusChanged( ~ )
+            %ONSTATUSCHANGED Respond to the model event "StatusChanged".
+            % Complete
+
+        end % onStatusChanged
+
+        function onSimulationStepDone( ~ )
+            %ONSIMULATIONSTEPDONE Respond to the model event
+            %"SimulationStepDone".
+            % Complete
+
+        end % onSimulationStepDone
 
         function setup ( obj )
             %SETUP Initialize the component.

@@ -1,10 +1,5 @@
-classdef SimulationController < matlab.ui.componentcontainer.ComponentContainer
+classdef SimulationController < massSpringDamper.Component
     %SIMULATIONCONTROLLER Provide a controller of the inputs and parameters of the simulation.
-
-    properties ( GetAccess = protected, SetAccess = immutable )
-        % Application data model.
-        Model(:, 1) massSpringDamper.Model {mustBeScalarOrEmpty}
-    end % properties ( GetAccess = protected, SetAccess = immutable )
 
     properties ( Access = private )
         % Main Grid Layout.
@@ -21,8 +16,6 @@ classdef SimulationController < matlab.ui.componentcontainer.ComponentContainer
         MagSpinner(1, 1) matlab.ui.control.Spinner
         % Input Change Interval Spinner.
         InputChangeSpinner(1, 1) matlab.ui.control.Spinner
-        % Random Stream Seed Spinner.
-        RandStreamSeedSpinner(1, 1) matlab.ui.control.Spinner
         % Start Stop Button.
         StartStopButton(1, 1) matlab.ui.control.Button
         % Max Points Per Signal Spinner.
@@ -44,8 +37,8 @@ classdef SimulationController < matlab.ui.componentcontainer.ComponentContainer
                 namedArgs.?massSpringDamper.SimulationController
             end % arguments ( Input )
 
-            % Assign the model.
-            obj.Model = model;
+            % Call the superclass constructor.
+            obj@massSpringDamper.Component( model )
 
             % Set any user-specified properties.
             set( obj, namedArgs )
@@ -56,13 +49,67 @@ classdef SimulationController < matlab.ui.componentcontainer.ComponentContainer
 
     methods ( Access = protected )
 
+        function onStatusChanged( obj )
+            %ONSTATUSCHANGED Respond to the model event "StatusChanged".
+            
+            if obj.Model.SimulationStatus == "Initializing" || obj.Model.SimulationStatus =="Initialized"
+                set(obj.MassSpinner, "Enable", "off")
+                set(obj.StiffnessSpinner, "Enable", "off")
+                set(obj.DampingSpinner, "Enable", "off")
+                set(obj.InitialPosEditField, "Enable", "off")
+                set(obj.MagSpinner, "Enable", "off")
+                set(obj.InputChangeSpinner, "Enable", "off")
+                set(obj.StartStopButton, "Enable", "off")
+                set(obj.MaxPointsPerSignalSpinner, "Enable", "off")
+                set(obj.SimTimeLabel, "Enable", "off")
+                set(obj.SimPaceLabel, "Enable", "off")
+
+                obj.StartStopButton.Text = "Starting...";
+
+            elseif obj.Model.SimulationStatus == "Running"
+                obj.StartStopButton.Text = "Stop";
+                obj.StartStopButton.BackgroundColor = [0.8, 0.33, 0.10];
+                set(obj.MassSpinner, "Enable", "on")
+                set(obj.StiffnessSpinner, "Enable", "on")
+                set(obj.DampingSpinner, "Enable", "on")
+                set(obj.MagSpinner, "Enable", "on")
+                set(obj.InputChangeSpinner, "Enable", "on")
+                set(obj.StartStopButton, "Enable", "on")
+                set(obj.MaxPointsPerSignalSpinner, "Enable", "on")
+                set(obj.SimTimeLabel, "Enable", "on")
+                set(obj.SimPaceLabel, "Enable", "on")
+
+            elseif obj.Model.SimulationStatus == "Inactive"
+                obj.StartStopButton.Text = "Start";
+                obj.StartStopButton.BackgroundColor = [0.47, 0.67, 0.19];
+                set(obj.MassSpinner, "Enable", "on")
+                set(obj.StiffnessSpinner, "Enable", "on")
+                set(obj.DampingSpinner, "Enable", "on")
+                set(obj.InitialPosEditField, "Enable", "on")
+                set(obj.MagSpinner, "Enable", "on")
+                set(obj.InputChangeSpinner, "Enable", "on")
+                set(obj.StartStopButton, "Enable", "on")
+                set(obj.MaxPointsPerSignalSpinner, "Enable", "on")
+                set(obj.SimTimeLabel, "Enable", "on")
+                set(obj.SimPaceLabel, "Enable", "on")
+            end
+
+        end % onStatusChanged
+
+        function onSimulationStepDone( obj )
+            %ONSIMULATIONSTEPDONE Respond to the model event
+            %"SimulationStepDone".
+            obj.SimTimeLabel.Text = obj.Model.SimTime;
+
+        end % onSimulationStepDone
+
         function setup( obj )
             %SETUP Initialize the component.
 
             % Create the main layout.
             obj.MainLayout = uigridlayout( "Parent", obj, ...
                 "ColumnWidth", {"fit", "1x"}, ...
-                "RowHeight", {"5x", "4x", "1x", "1x", "2x"});
+                "RowHeight", {"5x", "3x", "1x", "1x", "2x"});
 
             % Create the parameters Panel.
             paramPanel = uipanel(obj.MainLayout,...
@@ -86,7 +133,7 @@ classdef SimulationController < matlab.ui.componentcontainer.ComponentContainer
             forceGrid = uigridlayout(forcePanel,...
                 "BackgroundColor", [0.902 0.902 0.902],...
                 "ColumnWidth", {"fit", "1x"},...
-                "RowHeight", {"1x", "1x", "1x", "1x"});
+                "RowHeight", {"1x", "1x", "1x"});
 
             % Create the parameters Label
             paramLabel = uilabel(paramGrid,...
@@ -190,20 +237,20 @@ classdef SimulationController < matlab.ui.componentcontainer.ComponentContainer
             obj.InputChangeSpinner.Layout.Column = 2;
 
             % Create the Random Stream Seed Label and Spinner.
-            randSeedStreamLabel = uilabel(forceGrid,...
-                "Text", "Rand Stream Seed",...
-                "Tag", "DisableWhileRunning");
-            randSeedStreamLabel.Layout.Row = 4;
-            randSeedStreamLabel.Layout.Column = 1;
-
-            obj.RandStreamSeedSpinner = uispinner(forceGrid,...
-                "LowerLimitInclusive", "off",...
-                "UpperLimitInclusive", "off",...
-                "Limits", [0 Inf],...
-                "ValueDisplayFormat", "%.0f",...
-                "Value", 1);
-            obj.RandStreamSeedSpinner.Layout.Row = 4;
-            obj.RandStreamSeedSpinner.Layout.Column = 2;
+            % randSeedStreamLabel = uilabel(forceGrid,...
+            %     "Text", "Rand Stream Seed",...
+            %     "Tag", "DisableWhileRunning");
+            % randSeedStreamLabel.Layout.Row = 4;
+            % randSeedStreamLabel.Layout.Column = 1;
+            % 
+            % obj.RandStreamSeedSpinner = uispinner(forceGrid,...
+            %     "LowerLimitInclusive", "off",...
+            %     "UpperLimitInclusive", "off",...
+            %     "Limits", [0 Inf],...
+            %     "ValueDisplayFormat", "%.0f",...
+            %     "Value", 1);
+            % obj.RandStreamSeedSpinner.Layout.Row = 4;
+            % obj.RandStreamSeedSpinner.Layout.Column = 2;
 
             % Create the Start Stop Button.
             obj.StartStopButton = uibutton(obj.MainLayout,...
@@ -285,52 +332,16 @@ classdef SimulationController < matlab.ui.componentcontainer.ComponentContainer
         end % onDampingValueChanging (obj, s, ~)
 
         function onStartStopButtonPushed(obj, ~, ~)
-            obj.Model.StartStopSimulation;
-            if isequal(obj.StartStopButton.Text,"Start")
-                obj.manageAppState("Starting ...");
-            else
-                assert(isequal(obj.StartStopButton.Text,"Stop"));
-                obj.manageAppState("Stopping ...");
-                return; % return here so that sim finishes and runs the cleanup code below
-            end
-            % catch ME
-            %     % Handle error during sim
-            %     if ~isempty(ME.cause), ME = ME.cause{1}; end
-            %     uialert(app.GUI, getReport(ME,'extended','hyperlinks','off'), 'Error');
-            % end
-            % app.manageAppState('Start');
-            obj.manageAppState("Start");
+            if obj.Model.SimulationStatus == "Inactive"
+                obj.Model.StartSimulation;
+            elseif obj.Model.SimulationStatus == "Running"
+                obj.Model.StopSimulation;
+            end % if
         end % onStartStopButtonPushed ( obj, s, e )
 
         function onMaxPointsPerSignalChanging ( obj )
-
+            %Complete code
         end % function onMaxPointsPerSignalChanging ( obj )
-
-        function manageAppState( obj, startStopBtnText )
-            obj.StartStopButton.Text = startStopBtnText;
-            switch startStopBtnText
-                case "Start"
-                    obj.Model.checkState
-                    obj.StartStopButton.BackgroundColor = [0.47,0.67,0.19]; % green
-                    set(obj.InitialPosEditField, "Enable", "on")
-                case "Starting ..."
-                    set(findobj(obj.MainLayout.Children,'-property','Enable'),'Enable','off');
-                    % set(app.forLH, 'XData',[], 'YData',[]);
-                    % set(app.accLH, 'XData',[], 'YData',[]);
-                    % set(app.velLH, 'XData',[], 'YData',[]);
-                    % set(app.posLH, 'XData',[], 'YData',[]);
-                    % app.ForUIAxes.XLim = [0 10*app.InputChangeInterval.Value];
-                    % app.wallClockTimeAtSimStart = tic;
-                    % Simulink.sdi.clear();
-                case "Stop"
-                    obj.StartStopButton.BackgroundColor = [0.85,0.33,0.10]; % red
-                    set(findobj(obj.MainLayout.Children,'-property','Enable'),'Enable','on');
-                    set(findobj(obj.MainLayout.Children,'Tag','DisableWhileRunning'),'Enable','off');
-                case "Stopping ..."
-                    set(findobj(obj.MainLayout.Children,'-property','Enable'),'Enable','off');
-            end
-            drawnow limitrate;
-        end % function manageAppState( obj, startStopBtnText )
 
     end % methods ( Access = private )
 
