@@ -3,16 +3,8 @@ classdef SignalView < MassSpringDamperComponent
     %Acceleration, Velocity and Position.
 
     properties ( Access = private )
-        % Timescope to display the external force.
-        ExternalForceScope(:, 1) matlab.ui.scope.TimeScope ...
-            {mustBeScalarOrEmpty}
-        % Timescope to display the acceleration.
-        AccelerationScope(:, 1) matlab.ui.scope.TimeScope ...
-            {mustBeScalarOrEmpty}
-        % Timescope to display the velocity.
-        VelocityScope(:, 1) matlab.ui.scope.TimeScope {mustBeScalarOrEmpty}
-        % Timescope to display the position.
-        PositionScope(:, 1) matlab.ui.scope.TimeScope {mustBeScalarOrEmpty}
+        % Line plots to display the output signals.
+        Lines(:, 1) matlab.graphics.primitive.Line
     end % properties ( Access = private )
 
     methods
@@ -47,37 +39,36 @@ classdef SignalView < MassSpringDamperComponent
             %ONSIMULATIONSTEPPED Respond to the model event
             %"SimulationStepped".
 
-            obj.Model
+            tt = obj.Model.OutputLog;
+            time = tt.Properties.RowTimes;
+            set( obj.Lines(1), "XData", time, "YData", tt.Force )
+            set( obj.Lines(2), "XData", time, "YData", tt.Position )
+            set( obj.Lines(3), "XData", time, "YData", tt.Velocity )
+            set( obj.Lines(4), "XData", time, "YData", tt.Acceleration )
 
         end % onSimulationStepped
 
         function setup( obj )
             %SETUP Initialize the component.
 
-            % Create the main layout.
-            mainLayout = uigridlayout( obj, [4, 1], "Padding", 0 );
+            % Initialize the tiled layout, axes, and lines.
+            tl = tiledlayout( 4, 1, "Parent", obj );
+            ax = gobjects( 4, 1 );
+            varNames = Model.SignalNames;
+            varUnits = Model.SignalUnits;
 
-            % Create the time scopes.
-            obj.ExternalForceScope = uitimescope( ...
-                "Parent", mainLayout, ...
-                "XTimeSpan", 1, ...
-                "YLimits", [0, 1], ...
-                "Title", "External Force" );            
-            obj.AccelerationScope = uitimescope( ...
-                "Parent", mainLayout, ...
-                "XTimeSpan", 1, ...
-                "YLimits", [0, 1], ...
-                "Title", "Acceleration" );
-            obj.VelocityScope = uitimescope( ...
-                "Parent", mainLayout, ...
-                "XTimeSpan", 1, ...
-                "YLimits", [0, 1], ...
-                "Title", "Velocity" );            
-            obj.PositionScope = uitimescope( ...
-                "Parent", mainLayout, ...
-                "XTimeSpan", 1, ...
-                "YLimits", [0, 1], ...
-                "Title", "Position" );           
+            for k = 1 : 4
+                ax(k) = nexttile( tl );                
+                obj.Lines(k) = line( ax(k), seconds( NaN ), NaN, ...
+                    "Marker", ".", ...
+                    "Color", ax(k).ColorOrder(k, :), ...
+                    "LineWidth", 1.5 );                
+                ylabel( ax(k), varNames(k) + " (" + varUnits(k) + ")" )
+                grid( ax(k), "on" )
+            end % for
+
+            xlabel( tl, "Time (s)" )
+            title( tl, "Signals" )
 
         end % setup
 

@@ -19,6 +19,11 @@ classdef Model < handle
         SimulinkModelName(1, 1) string = "MassSpringDamperModel"
         % Model image file.
         ImageFile(1, 1) string {mustBeFile} = "MassSpringDamper.svg"
+        % Signal names.
+        SignalNames(1, 4) string = ["Force", "Position", ...
+            "Velocity", "Acceleration"]
+        % Signal units.
+        SignalUnits(1, 4) string = ["N", "m", "m/s", "m/s^2"]
     end % properties ( Constant )
 
     properties ( SetAccess = private )
@@ -28,14 +33,8 @@ classdef Model < handle
         SimulationOutput(1, 1) Simulink.SimulationOutput
         % Simulation time.
         SimulationTime(1, 1) double {mustBeNonnegative, mustBeFinite} = 0
-        % External force data.
-        ExternalForceData(1, :) timeseries
-        % Position data.
-        PositionData(1, :) timeseries
-        % Velocity data.
-        VelocityData(1, :) timeseries
-        % Acceleration data.
-        AccelerationData(1, :) timeseries
+        % Output data.
+        OutputLog(:, 4) timetable
         % Simulation status.
         SimulationStatus(1, 1) slsim.SimulationStatus = "Inactive"
     end % properties ( SetAccess = private )
@@ -49,10 +48,19 @@ classdef Model < handle
 
     methods
 
-        function obj = Model()
+        function obj = Model( namedArgs )
             %MODEL Construct the model.
 
+            arguments ( Input )
+                namedArgs.?Model
+            end % arguments ( Input )
+
             load_system( obj.SimulinkModelName )
+
+            names = string( fieldnames( namedArgs ) ).';
+            for name = names
+                obj.(name) = namedArgs.(name);
+            end % for
 
         end % constructor
 
@@ -98,7 +106,8 @@ classdef Model < handle
         function set.DampingCoefficient( obj, value )
 
             obj.DampingCoefficient = value;
-            obj.modifyParameterDuringSimulation( "b", obj.DampingCoefficient )
+            obj.modifyParameterDuringSimulation( ...
+                "b", obj.DampingCoefficient )
 
         end % set.DampingCoefficient
 
@@ -153,13 +162,11 @@ classdef Model < handle
 
         end % onSimulationStatusChanged
 
-        function forceInput = setForceInput( obj, ~, simTime )
+        function forceInput = setForceInput( ~, ~, ~ )
             %SETFORCEINPUT Set a constant external force input value.
 
             forceInput = 5;
-            %obj.ExternalForceData.Time = simTime;
-            %obj.ExternalForceData.Data = forceInput;
-
+            
         end % setForceInput
 
         function onSimulationStepped( obj, simTime )
@@ -168,12 +175,11 @@ classdef Model < handle
 
             obj.SimulationTime = simTime;
             obj.SimulationOutput = simulink.compiler...
-                .getSimulationOutput( obj.SimulinkModelName );
-            outLog = obj.SimulationOutput.logsout;
-            obj.ExternalForceData = outLog{1}.Values;
-            obj.PositionData = outLog{2}.Values;
-            obj.VelocityData = outLog{3}.Values;
-            obj.AccelerationData = outLog{4}.Values;
+                .getSimulationOutput( obj.SimulinkModelName );            
+            obj.OutputLog = obj.SimulationOutput.logsout...
+                .extractTimetable();
+            obj.OutputLog = fillmissing( obj.OutputLog, "previous" );
+            obj.OutputLog.Properties.VariableNames = obj.SignalNames;
             obj.notify( "SimulationStepped" )
 
         end % onSimulationStepped
@@ -192,16 +198,9 @@ classdef Model < handle
             end % if
 
             % Modify the parameter.
-            v = Simulink.Simulation.Variable( paramName, paramValue );
-            simulink.compiler.modifyParameters( obj.SimulinkModelName, v )
-            switch paramName
-                case "m"
-                    obj.Mass = paramValue;
-                case "k"
-                    obj.Stiffness = paramValue;
-                case "b"
-                    obj.DampingCoefficient = paramValue;
-            end % switch/case
+            v = Simulink.Simulation.Variable( paramName, paramValue, ...
+                "Workspace", obj.SimulinkModelName );
+            simulink.compiler.modifyParameters( obj.SimulinkModelName, v )            
 
         end % modifyParameterDuringSimulation
 
