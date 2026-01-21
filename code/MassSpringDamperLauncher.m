@@ -15,13 +15,17 @@ classdef MassSpringDamperLauncher < handle
 
     methods
 
-        function obj = MassSpringDamperLauncher()
+        function obj = MassSpringDamperLauncher( f )
             %MASSSPRINGDAMPERLAUNCHER Constructor, launching the app.
 
+            arguments ( Input )
+                f(1, 1) matlab.ui.Figure = uifigure()
+            end % arguments ( Input )
+
             % Create the app's figure.
-            obj.Figure = uifigure( ...
-                "Name", "Mass Spring Damper App", ...
-                "Visible", "off" );
+            obj.Figure = f;
+            set( obj.Figure, "Name", "Mass Spring Damper App", ...
+                "Visible", "off" )
 
             % Initialize the model.
             obj.Model = Model();
