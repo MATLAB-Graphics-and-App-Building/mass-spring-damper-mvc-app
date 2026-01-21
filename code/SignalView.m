@@ -1,6 +1,7 @@
 classdef SignalView < MassSpringDamperComponent
-    %SIGNALVIEW Displays the simulation signals for the External Force,
-    %Acceleration, Velocity and Position.
+    %SIGNALVIEW Displays the simulation signals.
+
+    % Copyright 2025-2026 The MathWorks, Inc
 
     properties ( Access = private )
         % Line plots to display the output signals.
