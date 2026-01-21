@@ -1,29 +1,30 @@
-classdef Component < matlab.ui.componentcontainer.ComponentContainer
-    %COMPONENT Superclass for massSpringDamper view/controller implementation.
+classdef MassSpringDamperComponent < ...
+        matlab.ui.componentcontainer.ComponentContainer
+    %MASSSPRINGDAMPERCOMPONENT Superclass for app views/controllers.
+
+    % Copyright 2025-2026 The MathWorks, Inc.
 
     % Model-related properties.
     properties ( GetAccess = protected, SetAccess = immutable )
         % Application data model.
-        Model(:, 1) massSpringDamper.Model {mustBeScalarOrEmpty}
+        Model(:, 1) Model {mustBeScalarOrEmpty}
         % StatusChanged Listener.
         StatusChangedListener(:, 1) event.listener {mustBeScalarOrEmpty}
         % SimulationStepDone Listener.
-        SimulationStepDoneListener(:,1) event.listener {mustBeScalarOrEmpty}
+        SimulationStepDoneListener(:,1) event.listener ...
+            {mustBeScalarOrEmpty}
     end % properties ( GetAccess = protected, SetAccess = immutable )
-
 
     methods
 
-        function obj = Component( model )
+        function obj = MassSpringDamperComponent( model )
             %COMPONENT Construct a component, given the model.
 
             arguments ( Input )
-                model(1, 1) massSpringDamper.Model
+                model(1, 1) Model
             end % arguments ( Input )
 
-            % Call the superclass constructor. This creates an un-Parented
-            % component, and sets the component to span its parent when
-            % this is assigned.
+            % Call the superclass constructor.
             obj@matlab.ui.componentcontainer.ComponentContainer( ...
                 "Parent", [], ...
                 "Units", "normalized", ...
@@ -32,13 +33,14 @@ classdef Component < matlab.ui.componentcontainer.ComponentContainer
             % Assign the model.
             obj.Model = model;
 
-            % Create StatusChangedListener.
+            % Create the model listeners.
+            weakObj = matlab.lang.WeakReference( obj );
             obj.StatusChangedListener = listener( obj.Model, ...
-                "StatusChanged", @obj.onStatusChanged );
-
-            % Create SimulationStepDoneListener.
-            obj.SimulationStepDoneListener = listener(obj.Model,...
-                "SimulationStepDone",@obj.onSimulationStepDone);
+                "StatusChanged", @( varargin ) ...
+                weakObj.Handle.onStatusChanged( varargin{:} ) );
+            obj.SimulationStepDoneListener = listener( obj.Model, ...
+                "SimulationStepped", @( varargin ) ...
+                weakObj.Handle.onSimulationStepped( varargin{:} ) );
 
         end % constructor
 
@@ -47,8 +49,8 @@ classdef Component < matlab.ui.componentcontainer.ComponentContainer
     methods ( Abstract, Access = protected )
 
         onStatusChanged( obj, s, e )
-        onSimulationStepDone( obj, s, e )
+        onSimulationStepped( obj, s, e )
 
     end % methods ( Abstract, Access = protected )
 
-end % class definition
+end % classdef
