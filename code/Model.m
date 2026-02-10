@@ -11,7 +11,11 @@ classdef Model < handle
         % Damping coefficient (N/m/s).
         DampingCoefficient(1, 1) double {mustBePositive, mustBeFinite} = 1
         % Initial position/displacement (m).
-        InitialPosition(1, 1) double {mustBeNonnegative, mustBeFinite} = 0               
+        InitialPosition(1, 1) double {mustBeNonnegative, mustBeFinite} = 0    
+        % Maximum Magnitude Value (N).
+        MaximumMagnitude(1, 1) double {mustBeNonnegative, mustBeFinite} = 100
+        % Input Change Interval.
+        InputChangeInterval(1, 1) double {mustBeNonnegative, mustBeFinite} = 5
     end % properties
 
     properties ( Constant )
@@ -66,7 +70,6 @@ classdef Model < handle
 
         function startSimulation( obj )
             %STARTSIMULATION Start the Simulink simulation.
-
             simStatus = simulink.compiler.getSimulationStatus( ...
                 obj.SimulinkModelName );
 
@@ -164,8 +167,9 @@ classdef Model < handle
 
         function forceInput = setForceInput( ~, ~, ~ )
             %SETFORCEINPUT Set a constant external force input value.
-
-            forceInput = 5;
+            ur01 = 0.5*rand;
+            forceInputMagnitude = 2*obj.MaximumMagnitude*(0.5-ur01);
+            forceInput = repmat(forceInputMagnitude, 1, obj.InputChangeInterval);
             
         end % setForceInput
 
