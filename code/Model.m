@@ -14,7 +14,7 @@ classdef Model < handle
         InitialPosition(1, 1) double {mustBeNonnegative, mustBeFinite} = 0    
         % Maximum Magnitude Value (N).
         MaximumMagnitude(1, 1) double {mustBeNonnegative, mustBeFinite} = 100
-        % Input Change Interval.
+        % Input Change Interval (s).
         InputChangeInterval(1, 1) double {mustBeNonnegative, mustBeFinite} = 5
     end % properties
 
@@ -114,6 +114,18 @@ classdef Model < handle
 
         end % set.DampingCoefficient
 
+        function set.MaximumMagnitude( obj, value )
+            
+            obj.MaximumMagnitude = value;
+
+        end % set.MaximumMagnitude
+
+        function set.InputChangeInterval( obj, value )
+            
+            obj.InputChangeInterval = value;
+
+        end % set.MaximumMagnitude
+
     end % methods
 
     methods ( Access = private )
@@ -165,14 +177,6 @@ classdef Model < handle
 
         end % onSimulationStatusChanged
 
-        function forceInput = setForceInput( ~, ~, ~ )
-            %SETFORCEINPUT Set a constant external force input value.
-            ur01 = 0.5*rand;
-            forceInputMagnitude = 2*obj.MaximumMagnitude*(0.5-ur01);
-            forceInput = repmat(forceInputMagnitude, 1, obj.InputChangeInterval);
-            
-        end % setForceInput
-
         function onSimulationStepped( obj, simTime )
             %ONSIMULATIONSTEPPED Update the output time series and notify
             %listeners.
@@ -187,6 +191,14 @@ classdef Model < handle
             obj.notify( "SimulationStepped" )
 
         end % onSimulationStepped
+
+        function forceInput = setForceInput( obj, ~, ~ )
+            %SETFORCEINPUT Set a constant external force input value.
+            ur01 = 0.5*rand;
+            forceInputMagnitude = 2*obj.MaximumMagnitude*(0.5-ur01);
+            forceInput = repmat(forceInputMagnitude, 1, obj.InputChangeInterval);
+            
+        end % setForceInput
 
         function modifyParameterDuringSimulation( ...
                 obj, paramName, paramValue )
