@@ -11,8 +11,7 @@ classdef MassSpringDamperComponent < ...
         % StatusChanged Listener.
         StatusChangedListener(:, 1) event.listener {mustBeScalarOrEmpty}
         % SimulationStepDone Listener.
-        SimulationStepDoneListener(:,1) event.listener ...
-            {mustBeScalarOrEmpty}
+        SimulationSteppedListener(:,1) event.listener {mustBeScalarOrEmpty}
     end % properties ( GetAccess = protected, SetAccess = immutable )
 
     methods
@@ -34,13 +33,10 @@ classdef MassSpringDamperComponent < ...
             obj.Model = model;
 
             % Create the model listeners.
-            weakObj = matlab.lang.WeakReference( obj );
             obj.StatusChangedListener = listener( obj.Model, ...
-                "StatusChanged", @( varargin ) ...
-                weakObj.Handle.onStatusChanged( varargin{:} ) );
-            obj.SimulationStepDoneListener = listener( obj.Model, ...
-                "SimulationStepped", @( varargin ) ...
-                weakObj.Handle.onSimulationStepped( varargin{:} ) );
+                "StatusChanged", @obj.onStatusChanged );
+            obj.SimulationSteppedListener = listener( obj.Model, ...
+                "SimulationStepped", @obj.onSimulationStepped );
 
         end % constructor
 

@@ -11,7 +11,7 @@ classdef Model < handle
         % Damping coefficient (N/m/s).
         DampingCoefficient(1, 1) double {mustBePositive, mustBeFinite} = 1
         % Initial position/displacement (m).
-        InitialPosition(1, 1) double {mustBeNonnegative, mustBeFinite} = 0    
+        InitialPosition(1, 1) double {mustBeNonnegative, mustBeFinite} = 0
         % Maximum Magnitude Value (N).
         MaximumMagnitude(1, 1) double {mustBeNonnegative, mustBeFinite} = 100
         % Input Change Interval (s).
@@ -115,13 +115,13 @@ classdef Model < handle
         end % set.DampingCoefficient
 
         function set.MaximumMagnitude( obj, value )
-            
+
             obj.MaximumMagnitude = value;
 
         end % set.MaximumMagnitude
 
         function set.InputChangeInterval( obj, value )
-            
+
             obj.InputChangeInterval = value;
 
         end % set.MaximumMagnitude
@@ -183,7 +183,7 @@ classdef Model < handle
 
             obj.SimulationTime = simTime;
             obj.SimulationOutput = simulink.compiler...
-                .getSimulationOutput( obj.SimulinkModelName );            
+                .getSimulationOutput( obj.SimulinkModelName );
             obj.OutputLog = obj.SimulationOutput.logsout...
                 .extractTimetable();
             obj.OutputLog = fillmissing( obj.OutputLog, "previous" );
@@ -194,10 +194,12 @@ classdef Model < handle
 
         function forceInput = setForceInput( obj, ~, ~ )
             %SETFORCEINPUT Set a constant external force input value.
-            ur01 = 0.5*rand;
-            forceInputMagnitude = 2*obj.MaximumMagnitude*(0.5-ur01);
-            forceInput = repmat(forceInputMagnitude, 1, obj.InputChangeInterval);
-            
+
+            ur01 = 0.5 * rand();
+            forceInputMagnitude = 2 * obj.MaximumMagnitude * (0.5 - ur01);
+            forceInput = repmat( ...
+                forceInputMagnitude, 1, obj.InputChangeInterval );
+
         end % setForceInput
 
         function modifyParameterDuringSimulation( ...
@@ -216,7 +218,7 @@ classdef Model < handle
             % Modify the parameter.
             v = Simulink.Simulation.Variable( paramName, paramValue, ...
                 "Workspace", obj.SimulinkModelName );
-            simulink.compiler.modifyParameters( obj.SimulinkModelName, v )            
+            simulink.compiler.modifyParameters( obj.SimulinkModelName, v )
 
         end % modifyParameterDuringSimulation
 
