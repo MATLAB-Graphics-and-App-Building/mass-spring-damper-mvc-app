@@ -193,7 +193,7 @@ classdef Model < handle
         end % onSimulationStepped
 
         function forceInput = setForceInput( obj, ~, ~ )
-            %SETFORCEINPUT Set a constant external force input value.
+            %SETFORCEINPUT Set a random external force input value.
 
             ur01 = 0.5 * rand();
             forceInputMagnitude = 2 * obj.MaximumMagnitude * (0.5 - ur01);
