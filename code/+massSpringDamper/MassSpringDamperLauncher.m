@@ -10,7 +10,7 @@ classdef MassSpringDamperLauncher < handle
 
     properties ( Access = private )
         % Application data model.
-        Model(:, 1) Model {mustBeScalarOrEmpty}
+        Model(:, 1) massSpringDamper.Model {mustBeScalarOrEmpty}
     end % properties ( Access = private )
 
     methods
@@ -25,10 +25,13 @@ classdef MassSpringDamperLauncher < handle
             % Create the app's figure.
             obj.Figure = f;
             set( obj.Figure, "Name", "Mass Spring Damper App", ...
+                "Units", "normalized", ...
+                "Position", [0.1, 0.1, 0.8, 0.8], ...
+                "CloseRequestFcn", @obj.onFigureClosed, ...
                 "Visible", "off" )
 
             % Initialize the model.
-            obj.Model = Model();
+            obj.Model = massSpringDamper.Model();
 
             % Define the main layout.
             mainLayout = uigridlayout( obj.Figure,...
@@ -36,23 +39,44 @@ classdef MassSpringDamperLauncher < handle
                 "RowHeight", ["1x", "1x"] );
 
             % Add the views and controllers.
-            SV = SignalView( obj.Model, "Parent", mainLayout );
+            SV = massSpringDamper.SignalView( obj.Model, ...
+                "Parent", mainLayout );
             SV.Layout.Row = [1, 2];
             SV.Layout.Column = 1;
-            
-            MIV = ModelImageView( obj.Model, "Parent", mainLayout );
+
+            MIV = massSpringDamper.ModelImageView( obj.Model, ...
+                "Parent", mainLayout );
             MIV.Layout.Row = 1;
             MIV.Layout.Column = 2;
 
-            SC = SimulationController( obj.Model, "Parent", mainLayout );
+            SC = massSpringDamper.SimulationController( obj.Model, ...
+                "Parent", mainLayout );
             SC.Layout.Row = 2;
             SC.Layout.Column = 2;
-            
+
             % Show the figure.
             obj.Figure.Visible = "on";
 
         end % constructor
 
+        function delete( obj )
+            %DELETE Delete the figure.
+
+            delete( obj.Figure )
+
+        end % destructor
+
     end % methods
+
+    methods ( Access = private )
+
+        function onFigureClosed( obj, ~, ~ )
+            %ONFIGURECLOSED Delete the launcher.
+
+            delete( obj )
+
+        end % onFigureClosed
+
+    end % methods ( Access = private )
 
 end % classdef

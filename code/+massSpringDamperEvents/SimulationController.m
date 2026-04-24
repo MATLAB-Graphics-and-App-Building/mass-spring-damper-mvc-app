@@ -1,4 +1,5 @@
-classdef SimulationController < MassSpringDamperComponent
+classdef SimulationController < ...
+        massSpringDamperEvents.MassSpringDamperComponent
     %SIMULATIONCONTROLLER Control simulation inputs and parameters.
 
     % Copyright 2025-2026 The MathWorks, Inc.
@@ -39,12 +40,12 @@ classdef SimulationController < MassSpringDamperComponent
             %given the model and optional name-value pairs.
 
             arguments ( Input )
-                model(1, 1) Model
-                namedArgs.?SimulationController
+                model(1, 1) massSpringDamperEvents.Model
+                namedArgs.?massSpringDamperEvents.SimulationController
             end % arguments ( Input )
 
             % Call the superclass constructor.
-            obj@MassSpringDamperComponent( model )
+            obj@massSpringDamperEvents.MassSpringDamperComponent( model )
 
             % Set any user-specified properties.
             set( obj, namedArgs )
@@ -168,7 +169,8 @@ classdef SimulationController < MassSpringDamperComponent
                 "Tag", "DisableWhileRunning", ...
                 "Value", 0 );
 
-            % Add a panel and grid to contain the randomly generated force input parameters.
+            % Add a panel and grid to contain the randomly generated force
+            % input parameters.
             forcePanel = uipanel( obj.MainLayout, ...
                 "BorderWidth", 2, ...
                 "Title", "Randomly Generated Force Input Parameters", ...
