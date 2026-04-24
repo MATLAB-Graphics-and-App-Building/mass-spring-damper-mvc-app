@@ -1,4 +1,4 @@
-classdef ModelImageView < MassSpringDamperComponent
+classdef ModelImageView < massSpringDamperEvents.MassSpringDamperComponent
     %MODELIMAGEVIEW Display the image of the Simulink model.
 
     % Copyright 2025-2026 The MathWorks, Inc
@@ -15,12 +15,12 @@ classdef ModelImageView < MassSpringDamperComponent
             % optional name-value pairs.
 
             arguments ( Input )
-                model(1, 1) Model
-                namedArgs.?ModelImageView
+                model(1, 1) massSpringDamperEvents.Model
+                namedArgs.?massSpringDamperEvents.ModelImageView
             end % arguments ( Input )
 
             % Call the superclass constructor.
-            obj@MassSpringDamperComponent( model )
+            obj@massSpringDamperEvents.MassSpringDamperComponent( model )
 
             % Update the image.
             obj.ModelImage.ImageSource = obj.Model.ImageFile;

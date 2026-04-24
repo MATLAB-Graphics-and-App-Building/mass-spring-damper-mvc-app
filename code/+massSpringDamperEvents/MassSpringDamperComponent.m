@@ -7,7 +7,7 @@ classdef MassSpringDamperComponent < ...
     % Model-related properties.
     properties ( GetAccess = protected, SetAccess = immutable )
         % Application data model.
-        Model(:, 1) Model {mustBeScalarOrEmpty}
+        Model(:, 1) massSpringDamperEvents.Model {mustBeScalarOrEmpty}
         % StatusChanged Listener.
         StatusChangedListener(:, 1) event.listener {mustBeScalarOrEmpty}
         % SimulationStepDone Listener.
@@ -20,7 +20,7 @@ classdef MassSpringDamperComponent < ...
             %COMPONENT Construct a component, given the model.
 
             arguments ( Input )
-                model(1, 1) Model
+                model(1, 1) massSpringDamperEvents.Model
             end % arguments ( Input )
 
             % Call the superclass constructor.

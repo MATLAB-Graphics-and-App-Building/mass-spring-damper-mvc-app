@@ -1,4 +1,4 @@
-classdef SignalView < MassSpringDamperComponent
+classdef SignalView < massSpringDamperEvents.MassSpringDamperComponent
     %SIGNALVIEW Displays the simulation signals.
 
     % Copyright 2025-2026 The MathWorks, Inc
@@ -15,12 +15,12 @@ classdef SignalView < MassSpringDamperComponent
             %the model and optional name-value pairs.
 
             arguments ( Input )
-                model(1, 1) Model
-                namedArgs.?SignalView
+                model(1, 1) massSpringDamperEvents.Model
+                namedArgs.?massSpringDamperEvents.SignalView
             end % arguments ( Input )
 
             % Call the superclass constructor.
-            obj@MassSpringDamperComponent( model )
+            obj@massSpringDamperEvents.MassSpringDamperComponent( model )
 
             % Set any user-specified properties.
             set( obj, namedArgs )
@@ -55,8 +55,8 @@ classdef SignalView < MassSpringDamperComponent
             % Initialize the tiled layout, axes, and lines.
             tl = tiledlayout( 4, 1, "Parent", obj );
             ax = gobjects( 4, 1 );
-            varNames = Model.SignalNames;
-            varUnits = Model.SignalUnits;
+            varNames = massSpringDamperEvents.Model.SignalNames;
+            varUnits = massSpringDamperEvents.Model.SignalUnits;
 
             for k = 1 : 4
                 ax(k) = nexttile( tl );                

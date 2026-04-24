@@ -12,17 +12,20 @@ classdef Model < handle
         DampingCoefficient(1, 1) double {mustBePositive, mustBeFinite} = 1
         % Initial position/displacement (m).
         InitialPosition(1, 1) double {mustBeNonnegative, mustBeFinite} = 0
-        % Maximum Magnitude Value (N).
-        MaximumMagnitude(1, 1) double {mustBeNonnegative, mustBeFinite} = 100
-        % Input Change Interval (s).
-        InputChangeInterval(1, 1) double {mustBeNonnegative, mustBeFinite} = 5
+        % Maximum force magnitude value (N).
+        MaximumMagnitude(1, 1) double ...
+            {mustBeNonnegative, mustBeFinite} = 100
+        % Input change interval (s).
+        InputChangeInterval(1, 1) double ...
+            {mustBeNonnegative, mustBeFinite} = 5
     end % properties
 
     properties ( Constant )
         % Simulink model name.
-        SimulinkModelName(1, 1) string = "MassSpringDamperModel"
+        SimulinkModelName(1, 1) string = "MassSpringDamperModelEvents"
         % Model image file.
-        ImageFile(1, 1) string {mustBeFile} = "MassSpringDamper.svg"
+        ImageFile(1, 1) string {mustBeFile} = "models/" + ...
+            massSpringDamperEvents.Model.SimulinkModelName + ".svg"
         % Signal names.
         SignalNames(1, 4) string = ["Force", "Position", ...
             "Velocity", "Acceleration"]
@@ -56,7 +59,7 @@ classdef Model < handle
             %MODEL Construct the model.
 
             arguments ( Input )
-                namedArgs.?Model
+                namedArgs.?massSpringDamperEvents.Model
             end % arguments ( Input )
 
             load_system( obj.SimulinkModelName )
@@ -68,8 +71,16 @@ classdef Model < handle
 
         end % constructor
 
+        function delete( obj )
+            %DELETE Close the Simulink model.
+
+            close_system( obj.SimulinkModelName, 0 )
+
+        end % delete
+
         function startSimulation( obj )
             %STARTSIMULATION Start the Simulink simulation.
+            
             simStatus = simulink.compiler.getSimulationStatus( ...
                 obj.SimulinkModelName );
 
@@ -90,14 +101,7 @@ classdef Model < handle
                 simulink.compiler.stopSimulation( obj.SimulinkModelName )
             end % if
 
-        end % stopSimulation
-
-        function set.Mass( obj, value )
-
-            obj.Mass = value;
-            obj.modifyParameterDuringSimulation( "m", obj.Mass )
-
-        end % set.Mass
+        end % stopSimulation       
 
         function set.Stiffness( obj, value )
 
@@ -106,6 +110,13 @@ classdef Model < handle
 
         end % set.Stiffness
 
+        function set.Mass( obj, value )
+
+            obj.Mass = value;
+            obj.modifyParameterDuringSimulation( "m", obj.Mass )
+
+        end % set.Mass
+
         function set.DampingCoefficient( obj, value )
 
             obj.DampingCoefficient = value;
@@ -113,6 +124,14 @@ classdef Model < handle
                 "b", obj.DampingCoefficient )
 
         end % set.DampingCoefficient
+
+        function set.InitialPosition( obj, value )
+
+            obj.InitialPosition = value;
+            obj.modifyParameterDuringSimulation( ...
+                "x0", obj.InitialPosition )
+
+        end % set.InitialPosition
 
         function set.MaximumMagnitude( obj, value )
 
@@ -124,7 +143,7 @@ classdef Model < handle
 
             obj.InputChangeInterval = value;
 
-        end % set.MaximumMagnitude
+        end % set.InputChangeInterval
 
     end % methods
 
