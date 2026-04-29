@@ -20,10 +20,7 @@ classdef SignalView < massSpringDamper.MassSpringDamperComponent
             end % arguments ( Input )
 
             % Call the superclass constructor.
-            obj@massSpringDamper.MassSpringDamperComponent( model )
-
-            % Set any user-specified properties.
-            set( obj, namedArgs )
+            obj@massSpringDamper.MassSpringDamperComponent( model )            
 
             % Bind each timescope with the corresponding signal.            
             for signalIdx = 1 : obj.Model.NumSignals
@@ -37,6 +34,9 @@ classdef SignalView < massSpringDamper.MassSpringDamperComponent
                     obj.Model.LoggedSignalPath(signalIdx), ...
                     obj.SignalTimeScope(signalIdx) );
             end % for
+
+            % Set any user-specified properties.
+            set( obj, namedArgs )
 
         end % constructor
 

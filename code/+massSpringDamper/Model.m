@@ -3,7 +3,7 @@ classdef Model < handle
 
     % Copyright 2025-2026 The MathWorks, Inc
 
-    properties
+    properties ( SetObservable )
         % Spring stiffness - k (N/m).
         Stiffness(1, 1) double {mustBePositive, mustBeFinite} = 100
         % Mass - m (kg).
@@ -12,11 +12,8 @@ classdef Model < handle
         DampingCoefficient(1, 1) double {mustBePositive, mustBeFinite} = 1
         % Initial position/displacement - x0 (m).
         InitialPosition(1, 1) double ...
-            {mustBeNonnegative, mustBeFinite} = 0.5
-        % Input change interval - dt (s).
-        InputChangeInterval(1, 1) double ...
-            {mustBeNonnegative, mustBeFinite} = 10
-    end % properties
+            {mustBeNonnegative, mustBeFinite} = 0.5        
+    end % properties ( SetObservable )
 
     properties ( Constant )
         % Simulink model name.
@@ -88,7 +85,7 @@ classdef Model < handle
                 "Value", string( obj.InitialPosition ) )
             setBlockParameter( obj.Simulation, ...
                 obj.ExternalForceBlockPath, ...
-                "tsamp", string( obj.InputChangeInterval ) )
+                "tsamp", "10" )
             forceInputVector = "[0, 10, 20].'";
             setBlockParameter( obj.Simulation, ...
                 obj.ExternalForceBlockPath, ...
@@ -157,16 +154,7 @@ classdef Model < handle
                 obj.SimulinkModelName + "/Initial Position", ...
                 "Value", string( obj.InitialPosition ) )
 
-        end % set.InitialPosition
-
-        function set.InputChangeInterval( obj, value )
-
-            obj.InputChangeInterval = value;
-            obj.modifyParameterDuringSimulation( ...
-                obj.ExternalForceBlockPath, ...
-                "tsamp", string( obj.InputChangeInterval ) )
-
-        end % set.MaximumMagnitude
+        end % set.InitialPosition        
 
     end % methods
 
