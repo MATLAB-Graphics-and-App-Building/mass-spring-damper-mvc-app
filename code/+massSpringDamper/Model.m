@@ -20,7 +20,7 @@ classdef Model < handle
         SimulinkModelName(1, 1) string = "MassSpringDamperModel"
         % Model image file.
         ImageFile(1, 1) string {mustBeFile} = "models/" + ...
-            massSpringDamperEvents.Model.SimulinkModelName + ".svg"
+            massSpringDamper.Model.SimulinkModelName + ".png"
         % Signal names.
         SignalNames(1, 4) string = ["Force", "Position", ...
             "Velocity", "Acceleration"]
