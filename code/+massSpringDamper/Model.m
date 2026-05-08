@@ -133,8 +133,7 @@ classdef Model < handle
             %parameter.
 
             % Update the simulation object.
-            setVariable( obj.Simulation, paramName, paramValue, ...
-                "Workspace", obj.SimulinkModelName )
+            setVariable( obj.Simulation, paramName, paramValue )
 
         end % modifyParameter
 
