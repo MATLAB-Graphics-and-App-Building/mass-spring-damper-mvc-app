@@ -66,16 +66,16 @@ classdef SimulationController < massSpringDamper.MassSpringDamperComponent
             obj.Spinners(4).Value = obj.Model.InitialPosition;            
 
             % Bind each spinner with the corresponding model parameter.
-            % vars = obj.Model.Simulation.TunableVariables;
-            % modelName = obj.Model.SimulinkModelName;
-            % obj.Bindings(1) = bind( obj.Spinners(1), "Value", ...
-            %     vars, "m:" + modelName );
-            % obj.Bindings(2) = bind( obj.Spinners(2), "Value", ...
-            %     vars, "k:" + modelName );
-            % obj.Bindings(3) = bind( obj.Spinners(3), "Value", ...
-            %     vars, "b:" + modelName );
-            % obj.Bindings(4) = bind( obj.Spinners(4), "Value", ...
-            %     vars, "x0:" + modelName );           
+            vars = obj.Model.Simulation.TunableVariables;
+            modelName = obj.Model.SimulinkModelName;
+            obj.Bindings(1) = bind( obj.Spinners(1), "Value", ...
+                vars, "m:" + modelName );
+            obj.Bindings(2) = bind( obj.Spinners(2), "Value", ...
+                vars, "k:" + modelName );
+            obj.Bindings(3) = bind( obj.Spinners(3), "Value", ...
+                vars, "b:" + modelName );
+            obj.Bindings(4) = bind( obj.Spinners(4), "Value", ...
+                vars, "x0:" + modelName );           
 
             % Set any user-specified properties.
             set( obj, namedArgs )

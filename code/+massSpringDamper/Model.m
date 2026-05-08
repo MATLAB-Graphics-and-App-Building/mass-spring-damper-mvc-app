@@ -24,23 +24,16 @@ classdef Model < handle
         % Signal names.
         SignalNames(1, 4) string = ["Force", "Position", ...
             "Velocity", "Acceleration"]
-        % Number of signals.
-        NumSignals(1, 1) double {mustBeInteger, mustBePositive} = ...
-            numel( massSpringDamper.Model.SignalNames )
+        % Signal units.
+        SignalUnits(1, 4) string = ["N", "m", "m/s", "m/s^2"]
         % Signal paths.
         LoggedSignalPath(1, 4) string = ...
             massSpringDamper.Model.SimulinkModelName + ...
             ["/External Force:1", "/Second-Order Integrator:1", ...
-            "/Second-Order Integrator:2", "/Mass:1"]
-        % Signal units.
-        SignalUnits(1, 4) string = ["N", "m", "m/s", "m/s^2"]
-        % Constant block path.
-        ExternalForceBlockPath(1, 1) string = ...
-            massSpringDamper.Model.SimulinkModelName + "/External Force"
-        % Block paths.
-        BlockPaths(1, 4) string = ...
-            massSpringDamper.Model.SimulinkModelName + "/" + ...
-            ["Stiffness", "Mass", "Damping", "Initial Position"]
+            "/Second-Order Integrator:2", "/Mass:1"]        
+        % Number of signals.
+        NumSignals(1, 1) double {mustBeInteger, mustBePositive} = ...
+            numel( massSpringDamper.Model.SignalNames )
     end % properties ( Constant )
 
     properties ( SetAccess = private )
@@ -59,7 +52,6 @@ classdef Model < handle
             end % arguments ( Input )
 
             % Load the model and create the Simulation object.
-            load_system( obj.SimulinkModelName )
             obj.Simulation = simulink.Simulation( ...
                 obj.SimulinkModelName );
 
@@ -69,29 +61,13 @@ classdef Model < handle
                 obj.(name) = namedArgs.(name);
             end % for
 
-            % Set the initial block and model parameters.
-            modelName = obj.SimulinkModelName;
-            setBlockParameter( obj.Simulation, ...
-                modelName + "/Stiffness", ...
-                "Gain", string( obj.Stiffness ) )
-            setBlockParameter( obj.Simulation, ...
-                modelName + "/Mass", ...
-                "Gain", string( 1 / obj.Mass ) )
-            setBlockParameter( obj.Simulation, ...
-                modelName + "/Damping", ...
-                "Gain", string( obj.DampingCoefficient ) )
-            setBlockParameter( obj.Simulation, ...
-                modelName + "/Initial Position", ...
-                "Value", string( obj.InitialPosition ) )
-            setBlockParameter( obj.Simulation, ...
-                obj.ExternalForceBlockPath, ...
-                "tsamp", "10" )
-            forceInputVector = "[0, 10, 20].'";
-            setBlockParameter( obj.Simulation, ...
-                obj.ExternalForceBlockPath, ...
-                "OutValues", forceInputVector )
-            setModelParameter( obj.Simulation, ...
-                "StopTime", "Inf" )
+            % Update the simulation parameters with the current values from
+            % the model.
+            obj.modifyParameter( "k", obj.Stiffness )
+            obj.modifyParameter( "m", obj.Mass )
+            obj.modifyParameter( "b", obj.DampingCoefficient )
+            obj.modifyParameter( "x0", obj.InitialPosition )           
+            setModelParameter( obj.Simulation, "StopTime", "Inf" )
 
         end % constructor
 
@@ -123,36 +99,28 @@ classdef Model < handle
         function set.Stiffness( obj, value )
 
             obj.Stiffness = value;
-            obj.modifyParameterDuringSimulation( ...
-                obj.SimulinkModelName + "/Stiffness", ...
-                "Gain", string( obj.Stiffness ) )
+            obj.modifyParameter( "k", obj.Stiffness )
 
         end % set.Stiffness
 
         function set.Mass( obj, value )
 
             obj.Mass = value;
-            obj.modifyParameterDuringSimulation( ...
-                obj.SimulinkModelName + "/Mass", ...
-                "Gain", string( 1 / obj.Mass ) )
+            obj.modifyParameter( "m", obj.Mass )
 
         end % set.Mass       
 
         function set.DampingCoefficient( obj, value )
 
             obj.DampingCoefficient = value;
-            obj.modifyParameterDuringSimulation( ...
-                obj.SimulinkModelName + "/Damping", ...
-                "Gain", string( obj.DampingCoefficient ) )
+            obj.modifyParameter( "b", obj.DampingCoefficient )
 
         end % set.DampingCoefficient
 
         function set.InitialPosition( obj, value )
 
             obj.InitialPosition = value;
-            obj.modifyParameterDuringSimulation( ...
-                obj.SimulinkModelName + "/Initial Position", ...
-                "Value", string( obj.InitialPosition ) )
+            obj.modifyParameter( "x0", obj.InitialPosition )
 
         end % set.InitialPosition        
 
@@ -160,16 +128,15 @@ classdef Model < handle
 
     methods ( Access = private )
 
-        function modifyParameterDuringSimulation( obj, blockPath, ...
-                paramName, paramValue )
-            %MODIFYPARAMETERDURINGSIMULATION Modify the given Simulink 
-            %simulation parameter when the simulation is running.
+        function modifyParameter( obj, paramName, paramValue )
+            %MODIFYPARAMETER Modify the given Simulink simulation
+            %parameter.
 
             % Update the simulation object.
-            setBlockParameter( obj.Simulation, ...
-                blockPath, paramName, paramValue )
+            setVariable( obj.Simulation, paramName, paramValue, ...
+                "Workspace", obj.SimulinkModelName )
 
-        end % modifyParameterDuringSimulation
+        end % modifyParameter
 
     end % methods ( Access = private )
 
