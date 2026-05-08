@@ -171,15 +171,15 @@ classdef Model < handle
 
             % Set the parameter values.
             simInput = simInput.setVariable( "k", obj.Stiffness, ...
-                "Workspace", "MassSpringDamperModel" );
+                "Workspace", "MassSpringDamperModelEvents" );
             simInput = simInput.setVariable( "m", obj.Mass, ...
-                "Workspace", "MassSpringDamperModel" );
+                "Workspace", "MassSpringDamperModelEvents" );
             simInput = simInput.setVariable( ...
                 "b", obj.DampingCoefficient, ...
-                "Workspace", "MassSpringDamperModel" );
+                "Workspace", "MassSpringDamperModelEvents" );
             simInput = simInput.setVariable( ...
                 "x0", obj.InitialPosition, ...
-                "Workspace", "MassSpringDamperModel" );
+                "Workspace", "MassSpringDamperModelEvents" );
 
             % Allow the model to run indefinitely.
             simInput = simInput.setModelParameter( "StopTime", "inf" );

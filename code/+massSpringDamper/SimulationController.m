@@ -8,6 +8,8 @@ classdef SimulationController < massSpringDamper.MassSpringDamperComponent
         % coefficient, initial position, and input change interval
         % parameters.
         ParameterListeners(:, 1) event.proplistener
+        % Simulation status listener.
+        SimulationStatusListener(:, 1) event.listener {mustBeScalarOrEmpty}
     end % properties ( Access = private )
 
     properties ( Access = private )
@@ -52,7 +54,11 @@ classdef SimulationController < massSpringDamper.MassSpringDamperComponent
                 @obj.onDampingCoefficientChanged );
             obj.ParameterListeners(4) = listener( obj.Model, ...
                 "InitialPosition", "PostSet", ...
-                @obj.onInitialPositionChanged );           
+                @obj.onInitialPositionChanged );
+
+            % Attach the simulation status change listener.
+            obj.SimulationStatusListener = listener( obj.Model.Simulation, ...
+                "SimulationStatusChanged", @obj.onSimulationStatusChanged);
 
             % Connect the controls to the simulation object.
             set( [obj.StartStopControls, ...
@@ -215,6 +221,18 @@ classdef SimulationController < massSpringDamper.MassSpringDamperComponent
 
             obj.Spinners(4).Value = obj.Model.InitialPosition;
 
+        end % onInitialPositionChanged  
+
+        function onSimulationStatusChanged( obj, ~, ~ )
+            %ONSIMULATIONSTATUSCHANGED Respond to changes in the
+            %simulation's status.
+
+            switch obj.Model.Simulation.Status
+                case "inactive"
+                    obj.Spinners(4).Enable = "on";
+                otherwise
+                    obj.Spinners(4).Enable = "off";
+            end
         end % onInitialPositionChanged        
 
     end % methods ( Access = private )
