@@ -7,6 +7,6 @@
     "AuthorName":"Ken Deeley, Maria Bedran",
     "AuthorEmail":"kdeeley@mathworks.com; mbedran@mathworks.com",
     "ToolboxFolder":"./tbx",
-    "ToolboxMatlabPath": ["./tbx", "./tbx/simmvc", "./tbx/simmvc/apps", ".tbx/simmvc/code", ".tbx/simmvc/models"],
+    "ToolboxMatlabPath": ["./tbx", "./tbx/simmvc", "./tbx/simmvc/apps", "./tbx/simmvc/code", "./tbx/simmvc/models"],
     "MinimumMatlabRelease":"R2026a"
 }
