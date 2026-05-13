@@ -1,0 +1,12 @@
+{
+    "ToolboxName":"Mass Spring Damper MVC App",
+    "Identifier":"ab12c7e0-0332-4ca0-b802-8064c282a300",
+    "Summary":"Modular MATLAB app for simulating a Simulink model",
+    "Description":"This toolbox contains the MATLAB code for the article 'Developing a Mass Spring Damper App using MVC Architecture and Simulink'.",
+    "AuthorCompany":"MathWorks",
+    "AuthorName":"Ken Deeley, Maria Bedran",
+    "AuthorEmail":"kdeeley@mathworks.com; mbedran@mathworks.com",
+    "ToolboxFolder":"./tbx",
+    "ToolboxMatlabPath": ["./tbx", "./tbx/simmvc", "./tbx/simmvc/apps", ".tbx/simmvc/code", ".tbx/simmvc/models"],
+    "MinimumMatlabRelease":"R2026a"
+}
