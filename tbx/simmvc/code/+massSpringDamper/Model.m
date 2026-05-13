@@ -78,9 +78,9 @@ classdef Model < handle
         end % constructor
 
         function delete( obj )
-            %DELETE Close the Simulink model.
+            %DELETE Delete the Simulation object.
 
-            close_system( obj.SimulinkModelName, 0 )
+            delete( obj.Simulation )
 
         end % delete
 

@@ -70,14 +70,7 @@ classdef Model < handle
                 obj.(name) = namedArgs.(name);
             end % for
 
-        end % constructor
-
-        function delete( obj )
-            %DELETE Close the Simulink model.
-
-            close_system( obj.SimulinkModelName, 0 )
-
-        end % delete
+        end % constructor        
 
         function startSimulation( obj )
             %STARTSIMULATION Start the Simulink simulation.
