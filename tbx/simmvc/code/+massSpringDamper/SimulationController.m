@@ -233,7 +233,8 @@ classdef SimulationController < massSpringDamper.MassSpringDamperComponent
                 otherwise
                     obj.Spinners(4).Enable = "off";
             end
-        end % onInitialPositionChanged        
+
+        end % onSimulationStatusChanged        
 
     end % methods ( Access = private )
 
