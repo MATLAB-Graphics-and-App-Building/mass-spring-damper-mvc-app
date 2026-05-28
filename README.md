@@ -1,6 +1,7 @@
 # Developing a Mass Spring Damper App using MVC Architecture and Simulink
 
 [![Open in MATLAB Online](readme/open-in-matlab-online.svg)](https://matlab.mathworks.com/open/github/v1?repo=MATLAB-Graphics-and-App-Building/mass-spring-damper-mvc-app&project=MassSpringDamperMVCApp.prj&file=tbx/simmvc/apps/MassSpringDamperApp.mlapp&focus=true)
+[![Mass Spring Damper App Actions](https://github.com/MATLAB-Graphics-and-App-Building/mass-spring-damper-mvc-app/actions/workflows/simmvc-ci.yml/badge.svg)](https://github.com/mathworks/MATLAB-Graphics-and-App-Building/mass-spring-damper-mvc-app/actions/workflows/simmvc-ci.yml)
 
 This repository contains the MATLAB® code for the article [Developing a Mass Spring Damper App using MVC Architecture and Simulink](). The article provides a short guide for developing a MATLAB app to control and simulate a Simulink® model. The app is built using the [model-view-controller](https://github.com/mathworks/matlab-model-view-controller) (MVC) architecture and can be deployed as a web app using [Simulink Compiler](https://www.mathworks.com/products/simulink-compiler.html)&trade;.
 
