@@ -1,5 +1,6 @@
 # Developing a Mass Spring Damper App using MVC Architecture and Simulink
 
+[![View Mass Spring Damper MVC App on File Exchange](readme/matlab-file-exchange.svg)](https://www.mathworks.com/matlabcentral/fileexchange/184017-mass-spring-damper-mvc-app)
 [![Open in MATLAB Online](readme/open-in-matlab-online.svg)](https://matlab.mathworks.com/open/github/v1?repo=MATLAB-Graphics-and-App-Building/mass-spring-damper-mvc-app&project=MassSpringDamperMVCApp.prj&file=tbx/simmvc/apps/MassSpringDamperApp.mlapp&focus=true)
 [![Mass Spring Damper App Actions](https://github.com/MATLAB-Graphics-and-App-Building/mass-spring-damper-mvc-app/actions/workflows/simmvc-ci.yml/badge.svg)](https://github.com/mathworks/MATLAB-Graphics-and-App-Building/mass-spring-damper-mvc-app/actions/workflows/simmvc-ci.yml)
 
