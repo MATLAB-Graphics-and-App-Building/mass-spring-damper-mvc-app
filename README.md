@@ -20,6 +20,7 @@ This example was created using MATLAB release R2026a.
 
 - [MATLAB&reg;](https://www.mathworks.com/products/matlab.html)
 - [Simulink&reg;](https://www.mathworks.com/products/simulink.html)
+- [MATLAB Compiler&trade;](https://www.mathworks.com/products/matlab-compiler.html)
 - [Simulink Compiler&trade;](https://www.mathworks.com/products/simulink-compiler.html)
 
 ## License
